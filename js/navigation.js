@@ -1,147 +1,65 @@
-
 /**
- * File navigation.js.
- *
- * Handles toggling the navigation menu for small screens.
- */
-(function() {
-  const siteNavigation = document.getElementById('site-navigation');
-
-  // Return early if the navigation doesn't exist.
-  if (!siteNavigation) {
-    return;
-  }
-
-  const button = siteNavigation.getElementsByTagName('button')[0];
-
-  // Return early if the button doesn't exist.
-  if ('undefined' === typeof button) {
-    return;
-  }
-
-  const menu = siteNavigation.getElementsByTagName('ul')[0];
-
-  // Hide menu toggle button if menu is empty and return early.
-  if ('undefined' === typeof menu) {
-    button.style.display = 'none';
-    return;
-  }
-
-  if (!menu.classList.contains('nav-menu')) {
-    menu.classList.add('nav-menu');
-  }
-
-  // Toggle the .toggled class and the aria-expanded value each time the button is clicked.
-  button.addEventListener('click', function() {
-    siteNavigation.classList.toggle('toggled');
-
-    if (button.getAttribute('aria-expanded') === 'true') {
-      button.setAttribute('aria-expanded', 'false');
-    } else {
-      button.setAttribute('aria-expanded', 'true');
-    }
-  });
-
-  // Remove the .toggled class and set aria-expanded to false when the user clicks outside the navigation.
-  document.addEventListener('click', function(event) {
-    const isClickInside = siteNavigation.contains(event.target);
-
-    if (!isClickInside) {
-      siteNavigation.classList.remove('toggled');
-      button.setAttribute('aria-expanded', 'false');
-    }
-  });
-})();
-/**
- * ナビゲーションメニューの機能
- *
- * @package News_Portal
+ * ナビゲーション機能のJavaScript
  */
 (function() {
     const siteNavigation = document.getElementById('site-navigation');
 
-    // サイトナビゲーション要素が存在しない場合は早期に終了
+    // 対象の要素がなければ終了
     if (!siteNavigation) {
         return;
     }
 
-    const button = siteNavigation.getElementsByTagName('button')[0];
+    const button = siteNavigation.querySelector('.menu-toggle');
+    const menu = siteNavigation.querySelector('.menu-container');
 
-    // メニューボタンが存在しない場合は早期に終了
-    if ('undefined' === typeof button) {
+    // メニューか切り替えボタンがなければ終了
+    if (!button || !menu) {
         return;
     }
 
-    const menu = siteNavigation.getElementsByTagName('ul')[0];
+    // メニューを非表示にする
+    menu.setAttribute('aria-hidden', 'true');
 
-    // メニューが存在しない場合はボタンを非表示にして終了
-    if ('undefined' === typeof menu) {
-        button.style.display = 'none';
-        return;
+    // ボタンがクリックされていなければ非表示のままにする
+    if (button.getAttribute('aria-expanded') !== 'true') {
+        menu.classList.remove('toggled');
     }
 
-    if (!menu.classList.contains('nav-menu')) {
-        menu.classList.add('nav-menu');
-    }
-
-    // メニューボタンのクリックイベント
     button.addEventListener('click', function() {
-        siteNavigation.classList.toggle('toggled');
+        menu.classList.toggle('toggled');
 
-        if (button.getAttribute('aria-expanded') === 'true') {
-            button.setAttribute('aria-expanded', 'false');
-        } else {
+        if (menu.classList.contains('toggled')) {
             button.setAttribute('aria-expanded', 'true');
-        }
-    });
-
-    // メニュー内のリンクがクリックされたときの処理
-    document.addEventListener('click', function(event) {
-        const isClickInside = siteNavigation.contains(event.target);
-
-        if (!isClickInside) {
-            siteNavigation.classList.remove('toggled');
+            menu.setAttribute('aria-hidden', 'false');
+        } else {
             button.setAttribute('aria-expanded', 'false');
+            menu.setAttribute('aria-hidden', 'true');
         }
     });
 
-    // サブメニューの処理
-    const links = menu.getElementsByTagName('a');
-    const linksWithChildren = menu.querySelectorAll('.menu-item-has-children > a, .page_item_has_children > a');
+    // ウィンドウがリサイズされた時に、メニューの状態をリセット
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            button.setAttribute('aria-expanded', 'false');
+            menu.classList.remove('toggled');
+            menu.setAttribute('aria-hidden', 'true');
+        }
+    });
 
+    // メニュー内のリンクをフォーカスできるようにする
+    const links = menu.getElementsByTagName('a');
+    const linksWithChildren = menu.querySelectorAll('.menu-item-has-children > a');
+
+    // すべてのサブメニューを閉じた状態にする
     for (const link of linksWithChildren) {
         link.addEventListener('click', function(event) {
-            const closestLi = link.closest('li');
-            
-            if (closestLi.classList.contains('focus')) {
-                closestLi.classList.remove('focus');
-            } else {
-                // 他の開いているサブメニューを閉じる
-                const openMenus = menu.querySelectorAll('.focus');
-                for (const openMenu of openMenus) {
-                    openMenu.classList.remove('focus');
-                }
-                
-                closestLi.classList.add('focus');
-            }
-            
-            // クリックイベントが伝播するのを防止
-            // ただし、サブメニューを持つ親メニューのリンク機能は維持
-            if (!link.classList.contains('allow-click')) {
+            const parent = this.parentNode;
+            parent.classList.toggle('focus');
+
+            // 1階層目のメニューの場合は、イベントをキャンセルしてサブメニューを表示
+            if (parent.parentNode === menu) {
                 event.preventDefault();
             }
         });
     }
-
-    // Escキーが押されたときの処理
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            const openMenus = menu.querySelectorAll('.focus');
-            for (const openMenu of openMenus) {
-                openMenu.classList.remove('focus');
-            }
-            siteNavigation.classList.remove('toggled');
-            button.setAttribute('aria-expanded', 'false');
-        }
-    });
 })();

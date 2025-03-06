@@ -1,454 +1,383 @@
-
 /*
 Theme Name: News Portal
 Theme URI: https://example.com/news-portal/
 Author: Replit User
-Author URI: https://example.com/
-Description: A responsive and SEO-optimized WordPress theme for news portals and magazine websites.
+Author URI: https://replit.com/
+Description: ニュースポータル用のWordPressテーマ
 Version: 1.0.0
-Requires at least: 5.0
-Tested up to: 6.3
-Requires PHP: 8.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: news-portal
-Tags: news, magazine, blog, two-columns, right-sidebar, custom-background, custom-colors, custom-header, custom-menu, featured-images, flexible-header, full-width-template, sticky-post, theme-options, translation-ready
+Tags: news, blog, custom-background, custom-logo, custom-menu, featured-images
 */
 
-/* Reset styles */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, font, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: 0;
-    font-size: 100%;
-    vertical-align: baseline;
+/* リセットCSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    line-height: 1.6;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-    background-color: #fff;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f8f8f8;
 }
 
-/* Global Styles */
 .container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
 }
 
+a {
+  color: #0073aa;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: #005177;
+}
+
+/* ヘッダー */
 .site-header {
-    background-color: var(--primary-color, #0066cc);
-    padding: 15px 0;
-    margin-bottom: 30px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px 0;
+  margin-bottom: 30px;
+}
+
+.site-branding {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 15px;
 }
 
 .site-title {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 5px;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 .site-title a {
-    color: #fff;
-    text-decoration: none;
+  color: #0073aa;
 }
 
 .site-description {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
+  margin: 5px 0 0;
+  font-size: 0.9rem;
+  color: #666;
 }
 
-/* Navigation */
+/* ナビゲーション */
 .main-navigation {
-    background-color: #333;
-    margin-bottom: 20px;
-}
-
-.main-navigation ul {
-    list-style: none;
-    display: flex;
-    margin: 0;
-    padding: 0;
-}
-
-.main-navigation li {
-    position: relative;
-}
-
-.main-navigation a {
-    display: block;
-    padding: 12px 15px;
-    color: #fff;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.main-navigation a:hover {
-    background-color: var(--secondary-color, #ff6600);
-}
-
-/* Content Area */
-#content {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-#primary {
-    width: 70%;
-    padding-right: 30px;
-}
-
-#secondary {
-    width: 30%;
-}
-
-@media (max-width: 768px) {
-    #primary, #secondary {
-        width: 100%;
-        padding-right: 0;
-    }
-}
-
-/* Posts */
-.entry-title {
-    font-size: 24px;
-    margin-bottom: 15px;
-}
-
-.entry-meta {
-    font-size: 13px;
-    color: #777;
-    margin-bottom: 15px;
-}
-
-.entry-meta a {
-    color: var(--primary-color, #0066cc);
-}
-
-.entry-content {
-    margin-bottom: 30px;
-}
-
-/* Featured Image */
-.post-thumbnail {
-    margin-bottom: 20px;
-}
-
-.post-thumbnail img {
-    max-width: 100%;
-    height: auto;
-}
-
-/* Comments */
-.comments-area {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
-
-/* Footer */
-.site-footer {
-    background-color: #222;
-    color: #fff;
-    padding: 20px 0;
-    margin-top: 40px;
-}
-
-.site-info {
-    text-align: center;
-    font-size: 14px;
-}
-
-.site-info a {
-    color: var(--secondary-color, #ff6600);
-}
-
-/* Responsive Design */
-@media (max-width: 992px) {
-    .site-title {
-        font-size: 24px;
-    }
-}
-
-@media (max-width: 576px) {
-    .site-title {
-        font-size: 20px;
-    }
-    
-    .entry-title {
-        font-size: 20px;
-    }
-}
-
-/* FontAwesome用スタイル（アイコン用） */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
-
-/* 記事スタイル改善 */
-.news-article {
-    margin-bottom: 30px;
-    border: 1px solid #eee;
-    border-radius: 5px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.news-article:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transform: translateY(-3px);
-}
-
-.article-inner {
-    padding: 20px;
-}
-
-.post-thumbnail {
-    margin: -20px -20px 20px -20px;
-}
-
-.featured-image {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.entry-title {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 22px;
-}
-
-.entry-meta {
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #666;
-}
-
-.entry-meta span {
-    margin-right: 15px;
-}
-
-.entry-meta i {
-    margin-right: 5px;
-    color: var(--primary-color, #0066cc);
-}
-
-.entry-content {
-    margin-bottom: 15px;
-}
-
-.entry-summary {
-    margin-bottom: 15px;
-}
-
-.read-more a {
-    display: inline-block;
-    padding: 5px 15px;
-    background-color: var(--primary-color, #0066cc);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 3px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
-
-.read-more a:hover {
-    background-color: var(--secondary-color, #ff6600);
-}
-
-.entry-footer {
-    margin-top: 15px;
-    font-size: 13px;
-    color: #666;
-    border-top: 1px solid #eee;
-    padding-top: 15px;
-}
-
-.entry-footer i {
-    margin-right: 5px;
-    color: var(--primary-color, #0066cc);
-}
-
-.cat-links, .tags-links {
-    margin-bottom: 5px;
-}
-
-/* ナビゲーションデザイン改善 */
-.main-navigation {
-    position: relative;
+  margin-bottom: 10px;
 }
 
 .menu-toggle {
-    display: none;
-    background: transparent;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
+  display: none;
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
 }
 
 .menu-icon {
-    display: block;
-    width: 25px;
-    height: 3px;
-    background-color: #fff;
-    position: relative;
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: #333;
+  position: relative;
 }
 
 .menu-icon:before,
 .menu-icon:after {
-    content: '';
-    display: block;
-    width: 100%;
-    height: 3px;
-    background-color: #fff;
-    position: absolute;
+  content: '';
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: #333;
+  position: absolute;
 }
 
 .menu-icon:before {
-    top: -8px;
+  top: -8px;
 }
 
 .menu-icon:after {
-    bottom: -8px;
+  bottom: -8px;
 }
 
-@media (max-width: 768px) {
-    .menu-toggle {
-        display: block;
-    }
-
-    .menu-container {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background-color: #333;
-        z-index: 100;
-    }
-
-    .main-navigation.toggled .menu-container {
-        display: block;
-    }
-
-    .main-navigation ul {
-        flex-direction: column;
-    }
+.menu-container {
+  display: block;
 }
 
-/* 投稿一覧のグリッドレイアウト */
+#primary-menu {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+#primary-menu li {
+  margin-right: 20px;
+}
+
+#primary-menu a {
+  display: block;
+  padding: 5px 0;
+  font-weight: 500;
+}
+
+/* コンテンツエリア */
+.site-content {
+  padding: 30px 0;
+}
+
+.content-area {
+  margin-bottom: 30px;
+}
+
+/* 投稿一覧 */
 .posts-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 30px;
 }
 
-@media (max-width: 768px) {
-    .posts-container {
-        grid-template-columns: 1fr;
-    }
+.news-article {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s;
 }
 
-/* サイドバースタイル */
-.widget-area {
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    padding: 20px;
+.news-article:hover {
+  transform: translateY(-5px);
 }
 
+.article-inner {
+  padding: 20px;
+}
+
+.post-thumbnail {
+  margin-bottom: 15px;
+}
+
+.post-thumbnail img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.entry-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.entry-meta span {
+  margin-right: 15px;
+}
+
+.entry-content {
+  margin-top: 20px;
+}
+
+/* ページナビゲーション */
+.posts-navigation,
+.post-navigation {
+  margin: 30px 0;
+}
+
+.nav-links {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* サイドバー */
 .widget {
-    margin-bottom: 30px;
-}
-
-.widget:last-child {
-    margin-bottom: 0;
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .widget-title {
-    font-size: 18px;
-    margin-top: 0;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--primary-color, #0066cc);
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #0073aa;
+  padding-bottom: 10px;
 }
 
-.widget ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+/* フッター */
+.site-footer {
+  background-color: #222;
+  color: #fff;
+  padding: 30px 0;
+  text-align: center;
 }
 
-.widget ul li {
-    border-bottom: 1px solid #eee;
-    padding: 8px 0;
+.site-footer a {
+  color: #0073aa;
 }
 
-.widget ul li:last-child {
-    border-bottom: none;
+.site-info {
+  font-size: 0.9rem;
 }
 
-.widget ul li a {
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s ease;
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .menu-container {
+    display: none;
+  }
+
+  .menu-container.toggled {
+    display: block;
+  }
+
+  #primary-menu {
+    flex-direction: column;
+  }
+
+  #primary-menu li {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .posts-container {
+    grid-template-columns: 1fr;
+  }
 }
 
-.widget ul li a:hover {
-    color: var(--primary-color, #0066cc);
+@media (min-width: 769px) {
+  .site-content .container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .content-area {
+    flex: 0 0 70%;
+    max-width: 70%;
+    padding-right: 30px;
+  }
+
+  .widget-area {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
 }
 
-/* Utility Classes */
-.text-center {
-    text-align: center;
+/* 404ページ */
+.error-404 {
+  text-align: center;
+  padding: 50px 0;
 }
 
-.clearfix::after {
-    content: "";
-    display: table;
-    clear: both;
+/* コメント */
+.comments-area {
+  margin-top: 50px;
 }
 
-/* スクリーンリーダー用テキスト */
+.comment-list {
+  list-style: none;
+}
+
+.comment {
+  margin-bottom: 30px;
+}
+
+.comment-author {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.comment-author .avatar {
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.comment-content {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.comment-form input[type="text"],
+.comment-form input[type="email"],
+.comment-form input[type="url"],
+.comment-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.comment-form input[type="submit"] {
+  background-color: #0073aa;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.comment-form input[type="submit"]:hover {
+  background-color: #005177;
+}
+
+/* アクセシビリティ */
 .screen-reader-text {
-    border: 0;
-    clip: rect(1px, 1px, 1px, 1px);
-    clip-path: inset(50%);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute !important;
-    width: 1px;
-    word-wrap: normal !important;
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  width: 1px;
+  word-wrap: normal !important;
 }
 
 .screen-reader-text:focus {
-    background-color: #f1f1f1;
-    border-radius: 3px;
-    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
-    clip: auto !important;
-    clip-path: none;
-    color: #21759b;
-    display: block;
-    font-size: 14px;
-    font-weight: bold;
-    height: auto;
-    left: 5px;
-    line-height: normal;
-    padding: 15px 23px 14px;
-    text-decoration: none;
-    top: 5px;
-    width: auto;
-    z-index: 100000;
+  background-color: #f1f1f1;
+  border-radius: 3px;
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
+  clip: auto !important;
+  clip-path: none;
+  color: #21759b;
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  height: auto;
+  left: 5px;
+  line-height: normal;
+  padding: 15px 23px 14px;
+  text-decoration: none;
+  top: 5px;
+  width: auto;
+  z-index: 100000;
 }

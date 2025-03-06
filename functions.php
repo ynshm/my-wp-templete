@@ -129,3 +129,38 @@ function news_portal_text_domain() {
     load_theme_textdomain('news-portal', get_template_directory() . '/languages');
 }
 add_action('after_setup_theme', 'news_portal_text_domain');
+
+/**
+ * サムネイル表示関数
+ */
+function news_portal_post_thumbnail() {
+    if (post_password_required() || is_attachment() || !has_post_thumbnail()) {
+        return;
+    }
+
+    if (is_singular()) :
+        ?>
+        <div class="post-thumbnail">
+            <?php the_post_thumbnail('large'); ?>
+        </div>
+    <?php else : ?>
+        <div class="post-thumbnail">
+            <a href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
+                <?php
+                the_post_thumbnail(
+                    'medium_large',
+                    array(
+                        'alt' => the_title_attribute(
+                            array(
+                                'echo' => false,
+                            )
+                        ),
+                        'class' => 'featured-image',
+                    )
+                );
+                ?>
+            </a>
+        </div>
+    <?php
+    endif;
+}

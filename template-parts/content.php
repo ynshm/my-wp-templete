@@ -1,3 +1,4 @@
+
 <?php
 /**
  * 投稿コンテンツ用テンプレート
@@ -40,17 +41,13 @@
                 echo '<span class="author vcard"><a href="' . esc_url(get_author_posts_url(get_the_author_meta('ID'))) . '">' . esc_html(get_the_author()) . '</a></span>';
                 echo '</span>';
 
-                // コメント数
-                if (!post_password_required() && (comments_open() || get_comments_number())) {
-                    echo '<span class="comments-link">';
-                    echo '<i class="fas fa-comments"></i> ';
-                    comments_popup_link(
-                        __('0 Comments', 'news-portal'),
-                        __('1 Comment', 'news-portal'),
-                        __('% Comments', 'news-portal')
-                    );
+                // カテゴリー
+                if (has_category()) :
+                    echo '<span class="cat-links">';
+                    echo '<i class="fas fa-folder"></i> ';
+                    echo get_the_category_list(', ');
                     echo '</span>';
-                }
+                endif;
                 ?>
             </div><!-- .entry-meta -->
             <?php endif; ?>
@@ -61,27 +58,42 @@
             if (is_singular()) :
                 the_content();
             else :
-                echo '<div class="entry-summary">';
                 the_excerpt();
-                echo '</div>';
-                echo '<div class="read-more"><a href="' . esc_url(get_permalink()) . '">' . __('Read More', 'news-portal') . ' &raquo;</a></div>';
+                echo '<a href="' . esc_url(get_permalink()) . '" class="read-more">' . esc_html__('Read More', 'news-portal') . ' &raquo;</a>';
             endif;
             ?>
         </div><!-- .entry-content -->
 
+        <?php if (is_singular() && 'post' === get_post_type()) : ?>
         <footer class="entry-footer">
             <?php
-            // カテゴリーとタグを表示
-            $categories_list = get_the_category_list(', ');
-            if ($categories_list) {
-                echo '<div class="cat-links"><i class="fas fa-folder"></i> ' . $categories_list . '</div>';
-            }
+            // タグ
+            if (has_tag()) :
+                echo '<div class="tags-links">';
+                echo '<i class="fas fa-tags"></i> ';
+                echo get_the_tag_list('', ', ');
+                echo '</div>';
+            endif;
 
-            $tags_list = get_the_tag_list('', ', ');
-            if ($tags_list && !is_wp_error($tags_list)) {
-                echo '<div class="tags-links"><i class="fas fa-tags"></i> ' . $tags_list . '</div>';
-            }
+            // 編集リンク
+            edit_post_link(
+                sprintf(
+                    wp_kses(
+                        /* translators: %s: Name of current post. */
+                        __('Edit <span class="screen-reader-text">%s</span>', 'news-portal'),
+                        array(
+                            'span' => array(
+                                'class' => array(),
+                            ),
+                        )
+                    ),
+                    wp_kses_post(get_the_title())
+                ),
+                '<span class="edit-link">',
+                '</span>'
+            );
             ?>
         </footer><!-- .entry-footer -->
+        <?php endif; ?>
     </div><!-- .article-inner -->
-</article><!-- #post-<?php the_ID(); ?> -->
+</article><!-- #post-## -->
