@@ -546,6 +546,11 @@ require_once get_template_directory() . '/inc/custom-post-types.php';
 require_once get_template_directory() . '/inc/api-functions.php';
 require_once get_template_directory() . '/inc/llm-functions.php';
 
+// Sitemap modules
+require_once get_template_directory() . '/inc/sitemap-submission.php';
+require_once get_template_directory() . '/inc/video-sitemap.php';
+require_once get_template_directory() . '/inc/news-sitemap.php';
+
 /**
  * コードの最適化とクリーン化
  */
