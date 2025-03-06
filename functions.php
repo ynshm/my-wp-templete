@@ -189,25 +189,41 @@ function news_portal_preload_fonts($html, $handle) {
 }
 
 /**
- * 構造化データの追加
+ * 拡張された構造化データの追加（LLM対応）
  */
 function news_portal_structured_data() {
     if (is_single()) {
         global $post;
         $author_id = $post->post_author;
         $author_name = get_the_author_meta('display_name', $author_id);
+        $content = get_the_content();
         
-        // ブログ記事の構造化データ
+        // 自動要約の生成（最初の150文字を取得し、文章の区切りで終わるように調整）
+        $auto_summary = wp_trim_words(strip_tags($content), 30, '...');
+        
+        // キーワード抽出（タグや特定の単語をベースに）
+        $keywords = array();
+        $tags = get_the_tags();
+        if ($tags) {
+            foreach ($tags as $tag) {
+                $keywords[] = $tag->name;
+            }
+        }
+        
+        // ブログ記事の拡張構造化データ（LLM対応）
         $schema = array(
             '@context' => 'https://schema.org',
             '@type' => 'BlogPosting',
             'headline' => get_the_title(),
             'description' => get_the_excerpt(),
+            'abstract' => $auto_summary, // LLM用の要約
+            'keywords' => implode(', ', $keywords), // LLM用のキーワード
             'datePublished' => get_the_date('c'),
             'dateModified' => get_the_modified_date('c'),
             'author' => array(
                 '@type' => 'Person',
-                'name' => $author_name
+                'name' => $author_name,
+                'url' => get_author_posts_url($author_id)
             ),
             'publisher' => array(
                 '@type' => 'Organization',
@@ -216,8 +232,19 @@ function news_portal_structured_data() {
                     '@type' => 'ImageObject',
                     'url' => get_site_icon_url()
                 )
-            )
+            ),
+            'mainEntityOfPage' => get_permalink(),
+            'articleBody' => strip_tags($content) // LLMが本文を理解しやすいように
         );
+        
+        // コンテンツの信頼性データ
+        $schema['contentRating'] = 'G';
+        
+        // 引用情報の追加（もし引用があれば）
+        $citations = news_portal_extract_citations($content);
+        if (!empty($citations)) {
+            $schema['citation'] = $citations;
+        }
         
         // アイキャッチ画像がある場合
         if (has_post_thumbnail()) {
@@ -227,13 +254,27 @@ function news_portal_structured_data() {
                 '@type' => 'ImageObject',
                 'url' => $image_url[0],
                 'width' => $image_url[1],
-                'height' => $image_url[2]
+                'height' => $image_url[2],
+                'caption' => get_post_meta($image_id, '_wp_attachment_image_alt', true) // 代替テキストをキャプションとして使用
             );
         }
         
+        // 見出し構造を抽出してLLMに提供
+        $headings = news_portal_extract_headings($content);
+        if (!empty($headings)) {
+            $schema['articleSection'] = $headings;
+        }
+        
         echo '<script type="application/ld+json">' . wp_json_encode($schema) . '</script>';
+        
+        // ハイライトデータのメタ情報（OGPタグ拡張）
+        $highlights = news_portal_generate_highlights($content);
+        if (!empty($highlights)) {
+            echo '<meta property="og:highlights" content="' . esc_attr(implode(' | ', $highlights)) . '" />';
+        }
+        
     } elseif (is_home() || is_front_page()) {
-        // Webサイトの構造化データ
+        // 拡張されたWebサイトの構造化データ
         $schema = array(
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
@@ -244,11 +285,104 @@ function news_portal_structured_data() {
                 '@type' => 'SearchAction',
                 'target' => home_url('/?s={search_term_string}'),
                 'query-input' => 'required name=search_term_string'
+            ),
+            // サイト全体の知識グラフ連携データ
+            'about' => array(
+                '@type' => 'Thing',
+                'name' => get_bloginfo('name'),
+                'description' => get_bloginfo('description'),
+                'url' => home_url('/about/') // 運営者情報ページへのリンク
             )
         );
         
+        // カテゴリー一覧を知識グラフとして提供
+        $categories = get_categories(array('hide_empty' => false));
+        if (!empty($categories)) {
+            $knowledge_graph = array();
+            foreach ($categories as $category) {
+                $knowledge_graph[] = array(
+                    '@type' => 'Thing',
+                    'name' => $category->name,
+                    'description' => $category->description,
+                    'url' => get_category_link($category->term_id)
+                );
+            }
+            $schema['knowsAbout'] = $knowledge_graph;
+        }
+        
         echo '<script type="application/ld+json">' . wp_json_encode($schema) . '</script>';
     }
+}
+
+/**
+ * コンテンツから引用情報を抽出
+ */
+function news_portal_extract_citations($content) {
+    $citations = array();
+    
+    // blockquoteタグから引用を探す
+    preg_match_all('/<blockquote.*?>(.*?)<\/blockquote>/s', $content, $matches);
+    
+    if (!empty($matches[1])) {
+        foreach ($matches[1] as $citation) {
+            $citations[] = array(
+                '@type' => 'CreativeWork',
+                'text' => strip_tags($citation)
+            );
+        }
+    }
+    
+    return $citations;
+}
+
+/**
+ * コンテンツから見出し構造を抽出
+ */
+function news_portal_extract_headings($content) {
+    $headings = array();
+    
+    // h2, h3タグから見出しを探す
+    preg_match_all('/<h([2-3]).*?>(.*?)<\/h[2-3]>/s', $content, $matches, PREG_SET_ORDER);
+    
+    if (!empty($matches)) {
+        foreach ($matches as $match) {
+            $level = $match[1];
+            $text = strip_tags($match[2]);
+            
+            $headings[] = array(
+                'level' => $level,
+                'text' => $text
+            );
+        }
+    }
+    
+    return $headings;
+}
+
+/**
+ * コンテンツからハイライトを生成
+ */
+function news_portal_generate_highlights($content) {
+    $highlights = array();
+    
+    // 記事の重要ポイントを抽出（強調タグや箇条書きから）
+    preg_match_all('/<(strong|em|b|i|li).*?>(.*?)<\/(strong|em|b|i|li)>/s', $content, $matches, PREG_SET_ORDER);
+    
+    $count = 0;
+    if (!empty($matches)) {
+        foreach ($matches as $match) {
+            if ($count >= 5) break; // 最大5つまで
+            
+            $text = strip_tags($match[2]);
+            // 短すぎる強調は除外
+            if (strlen($text) > 15) {
+                $highlights[] = $text;
+                $count++;
+            }
+        }
+    }
+    
+    return $highlights;
 }
 add_action('wp_head', 'news_portal_structured_data', 10);
 
@@ -310,6 +444,15 @@ function news_portal_text_domain() {
     load_theme_textdomain('news-portal', get_template_directory() . '/languages');
 }
 add_action('after_setup_theme', 'news_portal_text_domain');
+
+/**
+ * 追加機能モジュールの読み込み
+ */
+require_once get_template_directory() . '/inc/customizer.php';
+require_once get_template_directory() . '/inc/security-functions.php';
+require_once get_template_directory() . '/inc/custom-post-types.php';
+require_once get_template_directory() . '/inc/api-functions.php';
+require_once get_template_directory() . '/inc/llm-functions.php';
 
 /**
  * コードの最適化とクリーン化

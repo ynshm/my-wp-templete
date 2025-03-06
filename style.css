@@ -262,6 +262,126 @@ a:hover {
   font-size: 0.9rem;
 }
 
+/* LLM対応の構造化コンテンツ */
+[data-llm-section] {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+[data-llm-highlight="true"] {
+  background-color: #fffde7;
+  padding: 0 2px;
+  font-weight: 500;
+}
+
+[data-llm-citation="true"] {
+  border-left: 4px solid #0073aa;
+  padding-left: 1rem;
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
+[data-llm-list="bullet"],
+[data-llm-list="numbered"] {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* API データ表示 */
+.api-data-table-container {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.api-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.api-data-table th,
+.api-data-table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.api-data-table th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.api-data-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.api-data-list-container {
+  margin-bottom: 1.5rem;
+}
+
+.api-data-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.api-data-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.api-data-list ul {
+  margin-top: 8px;
+  margin-left: 20px;
+  list-style-type: disc;
+}
+
+.api-data-chart-container {
+  margin: 2rem 0;
+  max-width: 100%;
+}
+
+.api-data-json {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 0.9rem;
+  border-radius: 3px;
+}
+
+/* 知識ベース表示 */
+.knowledge-item {
+  background-color: #fff;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.knowledge-meta {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.knowledge-meta .knowledge-type {
+  background-color: #e8f4fd;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-right: 10px;
+}
+
+.knowledge-relevance {
+  display: inline-block;
+  background-color: #f0f8ea;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
 /* レスポンシブ */
 @media (max-width: 768px) {
   .menu-toggle {
