@@ -12,16 +12,59 @@
 
     <footer id="colophon" class="site-footer">
       <div class="container">
+        <?php if (is_active_sidebar('footer-1') || is_active_sidebar('footer-2') || is_active_sidebar('footer-3')) : ?>
+        <div class="footer-widgets">
+          <div class="footer-widget-area">
+            <?php if (is_active_sidebar('footer-1')) : ?>
+              <div class="footer-widget">
+                <?php dynamic_sidebar('footer-1'); ?>
+              </div>
+            <?php endif; ?>
+            
+            <?php if (is_active_sidebar('footer-2')) : ?>
+              <div class="footer-widget">
+                <?php dynamic_sidebar('footer-2'); ?>
+              </div>
+            <?php endif; ?>
+            
+            <?php if (is_active_sidebar('footer-3')) : ?>
+              <div class="footer-widget">
+                <?php dynamic_sidebar('footer-3'); ?>
+              </div>
+            <?php endif; ?>
+          </div>
+        </div>
+        <?php endif; ?>
+        
         <div class="site-info">
           <?php
-          /* translators: %s: CMS name, i.e. WordPress. */
-          printf(esc_html__('Proudly powered by %s', 'news-portal'), '<a href="https://wordpress.org/">WordPress</a>');
+          // フッターメニューの表示
+          if (has_nav_menu('footer-menu')) {
+            wp_nav_menu(array(
+              'theme_location' => 'footer-menu',
+              'menu_id' => 'footer-menu',
+              'container' => 'nav',
+              'container_class' => 'footer-navigation',
+              'depth' => 1,
+            ));
+          }
+          
+          // コピーライト表示（カスタマイザーから設定可能）
+          $copyright = get_theme_mod('footer_copyright', sprintf(__('Copyright © %s %s. All Rights Reserved.', 'news-portal'), date('Y'), get_bloginfo('name')));
+          echo '<div class="copyright">' . wp_kses_post($copyright) . '</div>';
           ?>
-          <span class="sep"> | </span>
-          <?php
-          /* translators: 1: Theme name, 2: Theme author. */
-          printf(esc_html__('Theme: %1$s by %2$s.', 'news-portal'), 'News Portal', '<a href="#">Replit User</a>');
-          ?>
+          
+          <div class="footer-credits">
+            <?php
+            /* translators: %s: CMS name, i.e. WordPress. */
+            printf(esc_html__('Proudly powered by %s', 'news-portal'), '<a href="https://wordpress.org/">WordPress</a>');
+            ?>
+            <span class="sep"> | </span>
+            <?php
+            /* translators: 1: Theme name, 2: Theme author. */
+            printf(esc_html__('Theme: %1$s by %2$s.', 'news-portal'), 'News Portal', '<a href="#">Replit User</a>');
+            ?>
+          </div>
         </div><!-- .site-info -->
       </div><!-- .container -->
     </footer><!-- #colophon -->

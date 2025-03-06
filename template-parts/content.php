@@ -1,21 +1,19 @@
 
 <?php
 /**
- * 投稿コンテンツ用テンプレート
+ * Template part for displaying posts
+ *
+ * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  *
  * @package News_Portal
  */
+
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class('news-article'); ?>>
+    <?php if (!is_singular()) : ?>
     <div class="article-inner">
-        <?php if (has_post_thumbnail()) : ?>
-        <div class="post-thumbnail">
-            <a href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
-                <?php the_post_thumbnail('medium_large', array('class' => 'featured-image')); ?>
-            </a>
-        </div>
-        <?php endif; ?>
+        <?php news_portal_post_thumbnail(); ?>
 
         <header class="entry-header">
             <?php
@@ -27,29 +25,22 @@
 
             if ('post' === get_post_type()) :
             ?>
-            <div class="entry-meta">
-                <?php
-                // 投稿日
-                echo '<span class="posted-on">';
-                echo '<i class="fas fa-calendar"></i> ';
-                echo '<time class="entry-date published">' . get_the_date() . '</time>';
-                echo '</span>';
-
-                // 著者
-                echo '<span class="byline">';
-                echo '<i class="fas fa-user"></i> ';
-                echo '<span class="author vcard"><a href="' . esc_url(get_author_posts_url(get_the_author_meta('ID'))) . '">' . esc_html(get_the_author()) . '</a></span>';
-                echo '</span>';
-
-                // カテゴリー
-                if (has_category()) :
-                    echo '<span class="cat-links">';
-                    echo '<i class="fas fa-folder"></i> ';
-                    echo get_the_category_list(', ');
-                    echo '</span>';
-                endif;
-                ?>
-            </div><!-- .entry-meta -->
+                <div class="entry-meta">
+                    <span class="posted-on">
+                        <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                        <?php echo get_the_date(); ?>
+                    </span>
+                    <span class="byline">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                        <?php the_author_posts_link(); ?>
+                    </span>
+                    <?php if (has_category()) : ?>
+                    <span class="cat-links">
+                        <i class="fas fa-folder" aria-hidden="true"></i>
+                        <?php the_category(', '); ?>
+                    </span>
+                    <?php endif; ?>
+                </div><!-- .entry-meta -->
             <?php endif; ?>
         </header><!-- .entry-header -->
 
@@ -59,41 +50,130 @@
                 the_content();
             else :
                 the_excerpt();
-                echo '<a href="' . esc_url(get_permalink()) . '" class="read-more">' . esc_html__('Read More', 'news-portal') . ' &raquo;</a>';
+                echo '<a href="' . esc_url(get_permalink()) . '" class="read-more">' . esc_html__('Read More', 'news-portal') . ' <i class="fas fa-arrow-right"></i></a>';
             endif;
             ?>
         </div><!-- .entry-content -->
 
-        <?php if (is_singular() && 'post' === get_post_type()) : ?>
+        <?php if (is_singular() && has_tag()) : ?>
         <footer class="entry-footer">
-            <?php
-            // タグ
-            if (has_tag()) :
-                echo '<div class="tags-links">';
-                echo '<i class="fas fa-tags"></i> ';
-                echo get_the_tag_list('', ', ');
-                echo '</div>';
-            endif;
-
-            // 編集リンク
-            edit_post_link(
-                sprintf(
-                    wp_kses(
-                        /* translators: %s: Name of current post. */
-                        __('Edit <span class="screen-reader-text">%s</span>', 'news-portal'),
-                        array(
-                            'span' => array(
-                                'class' => array(),
-                            ),
-                        )
-                    ),
-                    wp_kses_post(get_the_title())
-                ),
-                '<span class="edit-link">',
-                '</span>'
-            );
-            ?>
+            <div class="tags-links">
+                <i class="fas fa-tags" aria-hidden="true"></i>
+                <?php the_tags('', ', '); ?>
+            </div>
         </footer><!-- .entry-footer -->
         <?php endif; ?>
-    </div><!-- .article-inner -->
-</article><!-- #post-## -->
+    </div>
+    <?php else : ?>
+    <div class="breadcrumbs">
+        <?php
+        if (function_exists('news_portal_breadcrumb')) {
+            news_portal_breadcrumb();
+        } else {
+            // 基本的なブレッドクラムの実装
+            echo '<div class="breadcrumbs-container">';
+            echo '<a href="' . esc_url(home_url('/')) . '">' . esc_html__('Home', 'news-portal') . '</a>';
+            echo ' <span class="separator"><i class="fas fa-angle-right"></i></span> ';
+            
+            if (is_category() || is_single()) {
+                $categories = get_the_category();
+                if (!empty($categories)) {
+                    echo '<a href="' . esc_url(get_category_link($categories[0]->term_id)) . '">' . esc_html($categories[0]->name) . '</a>';
+                    echo ' <span class="separator"><i class="fas fa-angle-right"></i></span> ';
+                }
+            }
+            
+            if (is_single()) {
+                the_title();
+            } elseif (is_page()) {
+                the_title();
+            } elseif (is_archive()) {
+                echo get_the_archive_title();
+            }
+            echo '</div>';
+        }
+        ?>
+    </div>
+
+    <header class="entry-header">
+        <?php the_title('<h1 class="entry-title">', '</h1>'); ?>
+
+        <?php if ('post' === get_post_type()) : ?>
+        <div class="entry-meta">
+            <span class="posted-on">
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                <?php echo get_the_date(); ?>
+                <?php if (get_the_time('U') !== get_the_modified_time('U')) : ?>
+                <span class="updated-on">
+                    <i class="fas fa-edit" aria-hidden="true"></i>
+                    <?php esc_html_e('Updated on', 'news-portal'); ?> <?php echo get_the_modified_date(); ?>
+                </span>
+                <?php endif; ?>
+            </span>
+            <span class="byline">
+                <i class="fas fa-user" aria-hidden="true"></i>
+                <?php the_author_posts_link(); ?>
+            </span>
+            <?php if (has_category()) : ?>
+            <span class="cat-links">
+                <i class="fas fa-folder" aria-hidden="true"></i>
+                <?php the_category(', '); ?>
+            </span>
+            <?php endif; ?>
+            <?php if (comments_open()) : ?>
+            <span class="comments-link">
+                <i class="fas fa-comments" aria-hidden="true"></i>
+                <?php comments_popup_link(); ?>
+            </span>
+            <?php endif; ?>
+        </div><!-- .entry-meta -->
+        <?php endif; ?>
+    </header><!-- .entry-header -->
+
+    <?php news_portal_post_thumbnail(); ?>
+
+    <div class="entry-content">
+        <?php
+        the_content();
+
+        wp_link_pages(
+            array(
+                'before' => '<div class="page-links">' . esc_html__('Pages:', 'news-portal'),
+                'after'  => '</div>',
+            )
+        );
+        ?>
+    </div><!-- .entry-content -->
+
+    <footer class="entry-footer">
+        <?php if (has_tag()) : ?>
+        <div class="tags-links">
+            <i class="fas fa-tags" aria-hidden="true"></i>
+            <?php the_tags('', ', '); ?>
+        </div>
+        <?php endif; ?>
+        
+        <?php
+        // 関連記事の表示（カスタマイザーで無効化可能）
+        if (get_theme_mod('single_post_related', true)) {
+            news_portal_related_posts();
+        }
+        
+        // 著者情報の表示（カスタマイザーで無効化可能）
+        if (get_theme_mod('single_post_author_box', true)) {
+            news_portal_author_box();
+        }
+        
+        // 前後の記事へのリンク（カスタマイザーで無効化可能）
+        if (get_theme_mod('single_post_navigation', true)) {
+            the_post_navigation(
+                array(
+                    'prev_text' => '<span class="nav-subtitle"><i class="fas fa-arrow-left"></i> ' . esc_html__('Previous:', 'news-portal') . '</span> <span class="nav-title">%title</span>',
+                    'next_text' => '<span class="nav-subtitle">' . esc_html__('Next:', 'news-portal') . ' <i class="fas fa-arrow-right"></i></span> <span class="nav-title">%title</span>',
+                )
+            );
+        }
+        ?>
+    </footer><!-- .entry-footer -->
+    <?php endif; ?>
+</article><!-- #post-<?php the_ID(); ?> -->
