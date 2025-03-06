@@ -18,10 +18,58 @@ get_header();
             <header class="page-header">
                 <h1 class="page-title"><?php single_post_title(); ?></h1>
             </header>
-        <?php elseif ( is_home() && is_active_sidebar('homepage-top') ) : ?>
-            <div class="homepage-top-widgets">
-                <?php dynamic_sidebar('homepage-top'); ?>
+        <?php elseif ( is_home() ) : ?>
+            <!-- ヒーローセクション -->
+            <div class="hero-section">
+                <div class="hero-slider">
+                    <?php
+                    // 最新記事5件を取得
+                    $hero_args = array(
+                        'posts_per_page' => 5,
+                        'post_type' => 'post',
+                        'post_status' => 'publish',
+                        'ignore_sticky_posts' => true,
+                    );
+                    $hero_query = new WP_Query($hero_args);
+                    
+                    if ($hero_query->have_posts()) :
+                        while ($hero_query->have_posts()) : $hero_query->the_post();
+                    ?>
+                        <div class="hero-slide">
+                            <?php if (has_post_thumbnail()) : ?>
+                                <div class="hero-image">
+                                    <?php the_post_thumbnail('large'); ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="hero-content">
+                                <?php
+                                // カテゴリー表示
+                                $categories = get_the_category();
+                                if (!empty($categories)) :
+                                    echo '<a href="' . esc_url(get_category_link($categories[0]->term_id)) . '" class="hero-category">' . esc_html($categories[0]->name) . '</a>';
+                                endif;
+                                ?>
+                                <h2 class="hero-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+                                <div class="hero-meta">
+                                    <span class="hero-date"><?php echo get_the_date(); ?></span>
+                                </div>
+                                <div class="hero-excerpt"><?php echo wp_trim_words(get_the_excerpt(), 20); ?></div>
+                                <a href="<?php the_permalink(); ?>" class="hero-readmore"><?php esc_html_e('続きを読む', 'news-portal'); ?></a>
+                            </div>
+                        </div>
+                    <?php
+                        endwhile;
+                    endif;
+                    wp_reset_postdata();
+                    ?>
+                </div>
             </div>
+            
+            <?php if (is_active_sidebar('homepage-top')) : ?>
+                <div class="homepage-top-widgets">
+                    <?php dynamic_sidebar('homepage-top'); ?>
+                </div>
+            <?php endif; ?>
         <?php endif; ?>
 
         <div class="posts-container" id="posts-container">

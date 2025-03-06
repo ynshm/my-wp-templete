@@ -1380,3 +1380,297 @@ pre code {
     max-width: calc(30% - 1rem);
   }
 }
+/* ヒーローセクション */
+.hero-section {
+  margin-bottom: 3rem;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.hero-slider {
+  position: relative;
+}
+
+.hero-slide {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .hero-slide {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.hero-image {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-category {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.hero-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-title a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.hero-title a:hover {
+  color: var(--primary-color);
+}
+
+.hero-meta {
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.hero-excerpt {
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.hero-readmore {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background-color 0.3s;
+}
+
+.hero-readmore:hover {
+  background-color: var(--secondary-color);
+}
+
+/* おすすめの記事（記事上部） */
+.recommended-posts {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.recommended-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.recommended-posts-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .recommended-posts-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.recommended-post {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.recommended-thumbnail {
+  flex: 0 0 70px;
+}
+
+.recommended-thumbnail img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: var(--border-radius);
+}
+
+.recommended-post-title {
+  font-size: 0.875rem;
+  margin: 0 0 0.25rem;
+}
+
+.recommended-post-title a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.recommended-post-title a:hover {
+  color: var(--primary-color);
+}
+
+.recommended-meta {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+/* 前後の記事（記事下部） */
+.post-navigation-container {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.post-navigation-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.post-navigation-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .post-navigation-wrapper {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.post-navigation-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.post-navigation-thumbnail {
+  flex: 0 0 80px;
+}
+
+.post-navigation-thumbnail img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--border-radius);
+}
+
+.post-navigation-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+}
+
+.post-navigation-title {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.post-navigation-title a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.post-navigation-title a:hover {
+  color: var(--primary-color);
+}
+
+/* 同じカテゴリーの記事（記事下部） */
+.related-category-posts {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.related-category-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.related-category-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 480px) {
+  .related-category-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .related-category-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.related-category-post {
+  display: flex;
+  flex-direction: column;
+}
+
+.related-category-thumbnail {
+  margin-bottom: 0.75rem;
+}
+
+.related-category-thumbnail img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--border-radius);
+}
+
+.related-category-post-title {
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
+}
+
+.related-category-post-title a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.related-category-post-title a:hover {
+  color: var(--primary-color);
+}
+
+.related-category-meta {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}

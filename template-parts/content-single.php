@@ -94,6 +94,57 @@
             </span>
         </div><!-- .entry-meta -->
     </header><!-- .entry-header -->
+    
+    <!-- おすすめ記事 (記事上部) -->
+    <div class="recommended-posts">
+        <h4 class="recommended-title"><?php esc_html_e('おすすめの記事', 'news-portal'); ?></h4>
+        <div class="recommended-posts-container">
+            <?php
+            // 同じカテゴリーの人気記事3件を取得
+            $current_post_id = get_the_ID();
+            $current_categories = get_the_category();
+            if (!empty($current_categories)) {
+                $category_ids = array();
+                foreach ($current_categories as $category) {
+                    $category_ids[] = $category->term_id;
+                }
+                
+                $recommended_args = array(
+                    'posts_per_page' => 3,
+                    'post__not_in' => array($current_post_id),
+                    'category__in' => $category_ids,
+                    'orderby' => 'comment_count', // コメント数で並べ替え
+                    'ignore_sticky_posts' => true,
+                );
+                
+                $recommended_query = new WP_Query($recommended_args);
+                
+                if ($recommended_query->have_posts()) :
+                    while ($recommended_query->have_posts()) : $recommended_query->the_post();
+                    ?>
+                    <article class="recommended-post">
+                        <?php if (has_post_thumbnail()) : ?>
+                        <a href="<?php the_permalink(); ?>" class="recommended-thumbnail">
+                            <?php the_post_thumbnail('thumbnail'); ?>
+                        </a>
+                        <?php endif; ?>
+                        <div class="recommended-content">
+                            <h5 class="recommended-post-title">
+                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                            </h5>
+                            <div class="recommended-meta">
+                                <span class="recommended-date"><?php echo get_the_date(); ?></span>
+                            </div>
+                        </div>
+                    </article>
+                    <?php
+                    endwhile;
+                endif;
+                wp_reset_postdata();
+            }
+            ?>
+        </div>
+    </div>
 
     <?php news_portal_post_thumbnail(); ?>
 
