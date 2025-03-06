@@ -191,6 +191,223 @@ body {
     }
 }
 
+/* FontAwesome用スタイル（アイコン用） */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+/* 記事スタイル改善 */
+.news-article {
+    margin-bottom: 30px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.news-article:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+}
+
+.article-inner {
+    padding: 20px;
+}
+
+.post-thumbnail {
+    margin: -20px -20px 20px -20px;
+}
+
+.featured-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.entry-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.entry-meta {
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.entry-meta span {
+    margin-right: 15px;
+}
+
+.entry-meta i {
+    margin-right: 5px;
+    color: var(--primary-color, #0066cc);
+}
+
+.entry-content {
+    margin-bottom: 15px;
+}
+
+.entry-summary {
+    margin-bottom: 15px;
+}
+
+.read-more a {
+    display: inline-block;
+    padding: 5px 15px;
+    background-color: var(--primary-color, #0066cc);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.read-more a:hover {
+    background-color: var(--secondary-color, #ff6600);
+}
+
+.entry-footer {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #666;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.entry-footer i {
+    margin-right: 5px;
+    color: var(--primary-color, #0066cc);
+}
+
+.cat-links, .tags-links {
+    margin-bottom: 5px;
+}
+
+/* ナビゲーションデザイン改善 */
+.main-navigation {
+    position: relative;
+}
+
+.menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.menu-icon {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: #fff;
+    position: relative;
+}
+
+.menu-icon:before,
+.menu-icon:after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+    position: absolute;
+}
+
+.menu-icon:before {
+    top: -8px;
+}
+
+.menu-icon:after {
+    bottom: -8px;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .menu-container {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #333;
+        z-index: 100;
+    }
+
+    .main-navigation.toggled .menu-container {
+        display: block;
+    }
+
+    .main-navigation ul {
+        flex-direction: column;
+    }
+}
+
+/* 投稿一覧のグリッドレイアウト */
+.posts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .posts-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* サイドバースタイル */
+.widget-area {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.widget {
+    margin-bottom: 30px;
+}
+
+.widget:last-child {
+    margin-bottom: 0;
+}
+
+.widget-title {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color, #0066cc);
+}
+
+.widget ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.widget ul li {
+    border-bottom: 1px solid #eee;
+    padding: 8px 0;
+}
+
+.widget ul li:last-child {
+    border-bottom: none;
+}
+
+.widget ul li a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.widget ul li a:hover {
+    color: var(--primary-color, #0066cc);
+}
+
 /* Utility Classes */
 .text-center {
     text-align: center;
@@ -200,4 +417,38 @@ body {
     content: "";
     display: table;
     clear: both;
+}
+
+/* スクリーンリーダー用テキスト */
+.screen-reader-text {
+    border: 0;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute !important;
+    width: 1px;
+    word-wrap: normal !important;
+}
+
+.screen-reader-text:focus {
+    background-color: #f1f1f1;
+    border-radius: 3px;
+    box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
+    clip: auto !important;
+    clip-path: none;
+    color: #21759b;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    height: auto;
+    left: 5px;
+    line-height: normal;
+    padding: 15px 23px 14px;
+    text-decoration: none;
+    top: 5px;
+    width: auto;
+    z-index: 100000;
 }

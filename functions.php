@@ -9,6 +9,8 @@ if (!function_exists('custom_theme_setup')) :
    * Sets up theme defaults and registers support for various WordPress features.
    */
   function custom_theme_setup() {
+    // テキストドメインの読み込み
+    load_theme_textdomain('news-portal', get_template_directory() . '/languages');
     // Add default posts and comments RSS feed links to head.
     add_theme_support('automatic-feed-links');
 
@@ -21,7 +23,7 @@ if (!function_exists('custom_theme_setup')) :
     // This theme uses wp_nav_menu() in one location.
     register_nav_menus(
       array(
-        'menu-1' => esc_html__('Primary', 'custom-theme'),
+        'menu-1' => esc_html__('Primary', 'news-portal'),
       )
     );
 
@@ -86,9 +88,9 @@ add_action('after_setup_theme', 'custom_theme_content_width', 0);
 function custom_theme_widgets_init() {
   register_sidebar(
     array(
-      'name'          => esc_html__('Sidebar', 'custom-theme'),
+      'name'          => esc_html__('Sidebar', 'news-portal'),
       'id'            => 'sidebar-1',
-      'description'   => esc_html__('Add widgets here.', 'custom-theme'),
+      'description'   => esc_html__('Add widgets here.', 'news-portal'),
       'before_widget' => '<section id="%1$s" class="widget %2$s">',
       'after_widget'  => '</section>',
       'before_title'  => '<h2 class="widget-title">',
@@ -102,11 +104,28 @@ add_action('widgets_init', 'custom_theme_widgets_init');
  * Enqueue scripts and styles.
  */
 function custom_theme_scripts() {
-  wp_enqueue_style('custom-theme-style', get_stylesheet_uri(), array(), '1.0.0');
-  wp_enqueue_script('custom-theme-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '1.0.0', true);
+  wp_enqueue_style('news-portal-style', get_stylesheet_uri(), array(), '1.0.0');
+  wp_enqueue_script('news-portal-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '1.0.0', true);
 
   if (is_singular() && comments_open() && get_option('thread_comments')) {
     wp_enqueue_script('comment-reply');
   }
 }
 add_action('wp_enqueue_scripts', 'custom_theme_scripts');
+
+/**
+ * デフォルトメニューを表示する関数
+ */
+function news_portal_default_menu() {
+    echo '<ul id="primary-menu" class="menu">';
+    echo '<li class="menu-item"><a href="' . esc_url(home_url('/')) . '">' . esc_html__('Home', 'news-portal') . '</a></li>';
+    echo '</ul>';
+}
+
+/**
+ * テキストドメインを変更
+ */
+function news_portal_text_domain() {
+    load_theme_textdomain('news-portal', get_template_directory() . '/languages');
+}
+add_action('after_setup_theme', 'news_portal_text_domain');
