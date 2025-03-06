@@ -1,0 +1,203 @@
+
+/*
+Theme Name: News Portal
+Theme URI: https://example.com/news-portal/
+Author: Replit User
+Author URI: https://example.com/
+Description: A responsive and SEO-optimized WordPress theme for news portals and magazine websites.
+Version: 1.0.0
+Requires at least: 5.0
+Tested up to: 6.3
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: news-portal
+Tags: news, magazine, blog, two-columns, right-sidebar, custom-background, custom-colors, custom-header, custom-menu, featured-images, flexible-header, full-width-template, sticky-post, theme-options, translation-ready
+*/
+
+/* Reset styles */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+}
+
+body {
+    line-height: 1.6;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+    background-color: #fff;
+}
+
+/* Global Styles */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.site-header {
+    background-color: var(--primary-color, #0066cc);
+    padding: 15px 0;
+    margin-bottom: 30px;
+}
+
+.site-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.site-title a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.site-description {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Navigation */
+.main-navigation {
+    background-color: #333;
+    margin-bottom: 20px;
+}
+
+.main-navigation ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.main-navigation li {
+    position: relative;
+}
+
+.main-navigation a {
+    display: block;
+    padding: 12px 15px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.main-navigation a:hover {
+    background-color: var(--secondary-color, #ff6600);
+}
+
+/* Content Area */
+#content {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#primary {
+    width: 70%;
+    padding-right: 30px;
+}
+
+#secondary {
+    width: 30%;
+}
+
+@media (max-width: 768px) {
+    #primary, #secondary {
+        width: 100%;
+        padding-right: 0;
+    }
+}
+
+/* Posts */
+.entry-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.entry-meta {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.entry-meta a {
+    color: var(--primary-color, #0066cc);
+}
+
+.entry-content {
+    margin-bottom: 30px;
+}
+
+/* Featured Image */
+.post-thumbnail {
+    margin-bottom: 20px;
+}
+
+.post-thumbnail img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Comments */
+.comments-area {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Footer */
+.site-footer {
+    background-color: #222;
+    color: #fff;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+.site-info {
+    text-align: center;
+    font-size: 14px;
+}
+
+.site-info a {
+    color: var(--secondary-color, #ff6600);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .site-title {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 576px) {
+    .site-title {
+        font-size: 20px;
+    }
+    
+    .entry-title {
+        font-size: 20px;
+    }
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
