@@ -177,3 +177,76 @@
     </footer><!-- .entry-footer -->
     <?php endif; ?>
 </article><!-- #post-<?php the_ID(); ?> -->
+<?php
+/**
+ * 投稿一覧表示用のテンプレート
+ *
+ * @package News_Portal
+ */
+?>
+
+<article id="post-<?php the_ID(); ?>" <?php post_class('news-article'); ?>>
+    <?php if (has_post_thumbnail()) : ?>
+        <div class="post-thumbnail">
+            <a href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
+                <?php
+                the_post_thumbnail(
+                    'medium_large',
+                    array(
+                        'alt' => the_title_attribute(
+                            array(
+                                'echo' => false,
+                            )
+                        ),
+                        'class' => 'lazy-load',
+                        'loading' => 'lazy',
+                    )
+                );
+                ?>
+            </a>
+        </div>
+    <?php endif; ?>
+    
+    <div class="article-inner">
+        <?php
+        // カテゴリー表示
+        $categories = get_the_category();
+        if (!empty($categories)) :
+            echo '<a href="' . esc_url(get_category_link($categories[0]->term_id)) . '" class="entry-category">' . esc_html($categories[0]->name) . '</a>';
+        endif;
+        ?>
+
+        <header class="entry-header">
+            <?php
+            the_title('<h2 class="entry-title"><a href="' . esc_url(get_permalink()) . '" rel="bookmark">', '</a></h2>');
+            ?>
+            <div class="entry-meta">
+                <span class="posted-on">
+                    <i class="far fa-calendar-alt" aria-hidden="true"></i>
+                    <?php echo get_the_date(); ?>
+                </span>
+                <span class="byline">
+                    <i class="far fa-user" aria-hidden="true"></i>
+                    <?php the_author_posts_link(); ?>
+                </span>
+                <?php if (comments_open()) : ?>
+                <span class="comments-link">
+                    <i class="far fa-comment" aria-hidden="true"></i>
+                    <?php comments_popup_link('0', '1', '%'); ?>
+                </span>
+                <?php endif; ?>
+            </div><!-- .entry-meta -->
+        </header><!-- .entry-header -->
+
+        <div class="entry-content">
+            <?php the_excerpt(); ?>
+        </div><!-- .entry-content -->
+
+        <footer class="entry-footer">
+            <a href="<?php the_permalink(); ?>" class="read-more">
+                <?php esc_html_e('読む続ける', 'news-portal'); ?>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </a>
+        </footer><!-- .entry-footer -->
+    </div><!-- .article-inner -->
+</article><!-- #post-<?php the_ID(); ?> -->

@@ -145,7 +145,124 @@ function news_portal_customize_register($wp_customize) {
     $wp_customize->add_control(new WP_Customize_Category_Control($wp_customize, 'homepage_featured_category', array(
         'label' => __('Featured Slider Category', 'news-portal'),
         'section' => 'news_portal_homepage_section',
+        'description' => __('Select a category for featured slider. Leave empty to display latest posts.', 'news-portal'),
     )));
+    
+    // 無限スクロールの有効化
+    $wp_customize->add_setting('enable_infinite_scroll', array(
+        'default' => false,
+        'sanitize_callback' => 'news_portal_sanitize_checkbox',
+    ));
+    
+    $wp_customize->add_control('enable_infinite_scroll', array(
+        'label' => __('Enable Infinite Scroll', 'news-portal'),
+        'section' => 'news_portal_homepage_section',
+        'type' => 'checkbox',
+        'description' => __('Enable infinite scroll for blog and archive pages.', 'news-portal'),
+    ));
+    
+    // 投稿一覧レイアウト
+    $wp_customize->add_setting('posts_layout_style', array(
+        'default' => 'grid',
+        'sanitize_callback' => 'news_portal_sanitize_select',
+    ));
+    
+    $wp_customize->add_control('posts_layout_style', array(
+        'label' => __('Posts Layout Style', 'news-portal'),
+        'section' => 'news_portal_homepage_section',
+        'type' => 'select',
+        'choices' => array(
+            'grid' => __('Grid Layout', 'news-portal'),
+            'list' => __('List Layout', 'news-portal'),
+            'masonry' => __('Masonry Layout', 'news-portal'),
+        ),
+    ));
+    
+    // 記事カード表示オプション
+    $wp_customize->add_setting('card_style', array(
+        'default' => 'shadow',
+        'sanitize_callback' => 'news_portal_sanitize_select',
+    ));
+    
+    $wp_customize->add_control('card_style', array(
+        'label' => __('Card Style', 'news-portal'),
+        'section' => 'news_portal_homepage_section',
+        'type' => 'select',
+        'choices' => array(
+            'shadow' => __('Shadow', 'news-portal'),
+            'border' => __('Border', 'news-portal'),
+            'flat' => __('Flat', 'news-portal'),
+        ),
+    ));
+    
+    // パフォーマンス設定セクション
+    $wp_customize->add_section('news_portal_performance_section', array(
+        'title' => __('Performance Options', 'news-portal'),
+        'priority' => 95,
+    ));
+    
+    // 遅延読み込みの有効化
+    $wp_customize->add_setting('enable_lazy_loading', array(
+        'default' => true,
+        'sanitize_callback' => 'news_portal_sanitize_checkbox',
+    ));
+    
+    $wp_customize->add_control('enable_lazy_loading', array(
+        'label' => __('Enable Lazy Loading for Images', 'news-portal'),
+        'section' => 'news_portal_performance_section',
+        'type' => 'checkbox',
+    ));
+    
+    // プリロードの有効化
+    $wp_customize->add_setting('enable_preload', array(
+        'default' => true,
+        'sanitize_callback' => 'news_portal_sanitize_checkbox',
+    ));
+    
+    $wp_customize->add_control('enable_preload', array(
+        'label' => __('Enable Resource Preloading', 'news-portal'),
+        'section' => 'news_portal_performance_section',
+        'type' => 'checkbox',
+    ));
+    
+    // ソーシャルシェアセクション
+    $wp_customize->add_section('news_portal_social_section', array(
+        'title' => __('Social Sharing', 'news-portal'),
+        'priority' => 70,
+    ));
+    
+    // ソーシャルシェアの有効化
+    $wp_customize->add_setting('enable_social_share', array(
+        'default' => true,
+        'sanitize_callback' => 'news_portal_sanitize_checkbox',
+    ));
+    
+    $wp_customize->add_control('enable_social_share', array(
+        'label' => __('Enable Social Sharing', 'news-portal'),
+        'section' => 'news_portal_social_section',
+        'type' => 'checkbox',
+    ));
+    
+    // 各SNSの有効化
+    $social_networks = array(
+        'twitter' => __('Twitter', 'news-portal'),
+        'facebook' => __('Facebook', 'news-portal'),
+        'pinterest' => __('Pinterest', 'news-portal'),
+        'linkedin' => __('LinkedIn', 'news-portal'),
+    );
+    
+    foreach ($social_networks as $network => $label) {
+        $wp_customize->add_setting('enable_share_' . $network, array(
+            'default' => true,
+            'sanitize_callback' => 'news_portal_sanitize_checkbox',
+        ));
+        
+        $wp_customize->add_control('enable_share_' . $network, array(
+            'label' => $label,
+            'section' => 'news_portal_social_section',
+            'type' => 'checkbox',
+        ));
+    }
     
     // フッター設定セクション
     $wp_customize->add_section('news_portal_footer_section', array(

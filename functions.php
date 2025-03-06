@@ -178,6 +178,29 @@ function news_portal_optimize_scripts() {
     
     // Google Fontsのプリロード
     add_filter('style_loader_tag', 'news_portal_preload_fonts', 10, 2);
+    
+    // モダンなJavaScriptの追加
+    wp_enqueue_script('news-portal-main', get_template_directory_uri() . '/js/main.js', array('jquery'), '1.0.1', true);
+    
+    // 無限スクロール用JS
+    if (get_theme_mod('enable_infinite_scroll', false) && (is_home() || is_archive() || is_search())) {
+        wp_enqueue_script('news-portal-infinite-scroll', get_template_directory_uri() . '/js/infinite-scroll.js', array('jquery'), '1.0.0', true);
+        
+        // 無限スクロール用の設定をJSに渡す
+        wp_localize_script('news-portal-infinite-scroll', 'newsPortalInfiniteScroll', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('news-portal-infinite-scroll-nonce'),
+            'posts_container' => '#posts-container',
+            'post_selector' => '.news-article',
+            'pagination' => '.pagination',
+            'next_selector' => '.pagination .next',
+            'loading_text' => __('Loading...', 'news-portal'),
+            'finished_text' => __('No more posts to load', 'news-portal'),
+        ));
+    }
+    
+    // 画像遅延読み込み
+    wp_enqueue_script('news-portal-lazy-load', get_template_directory_uri() . '/js/lazy-load.js', array('jquery'), '1.0.0', true);
 }
 add_action('wp_enqueue_scripts', 'news_portal_optimize_scripts', 1);
 
@@ -187,6 +210,75 @@ function news_portal_preload_fonts($html, $handle) {
     }
     return $html;
 }
+
+/**
+ * クリティカルCSSの追加
+ */
+function news_portal_critical_css() {
+    ob_start();
+    ?>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #f97316;
+            --text-color: #374151;
+            --bg-color: #f9fafb;
+            --bg-card: #ffffff;
+            --border-color: #e5e7eb;
+        }
+        body {
+            font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .site-header {
+            background-color: var(--bg-card);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .site-content {
+            padding: 2rem 0 4rem;
+        }
+    </style>
+    <?php
+    $critical_css = ob_get_clean();
+    echo $critical_css;
+}
+add_action('wp_head', 'news_portal_critical_css', 1);
+
+/**
+ * リソースのプリロード
+ */
+function news_portal_resource_hints($urls, $relation_type) {
+    if ('preconnect' === $relation_type) {
+        // Google Fontsへの接続を事前に確立
+        $urls[] = array(
+            'href' => 'https://fonts.googleapis.com',
+            'crossorigin',
+        );
+        $urls[] = array(
+            'href' => 'https://fonts.gstatic.com',
+            'crossorigin',
+        );
+        // Font Awesomeへの接続を事前に確立
+        $urls[] = array(
+            'href' => 'https://cdnjs.cloudflare.com',
+            'crossorigin',
+        );
+    }
+    return $urls;
+}
+add_filter('wp_resource_hints', 'news_portal_resource_hints', 10, 2);
 
 /**
  * 拡張された構造化データの追加（LLM対応）
@@ -601,6 +693,73 @@ function news_portal_breadcrumb() {
     }
     
     echo '</div>';
+}
+
+/**
+ * フロントページ用のフィーチャードスライダー
+ */
+function news_portal_featured_slider() {
+    $slider_category = get_theme_mod('homepage_featured_category', '');
+    
+    if (empty($slider_category)) {
+        // カテゴリーが設定されていない場合は最新記事を表示
+        $slider_args = array(
+            'posts_per_page' => 5,
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'ignore_sticky_posts' => true,
+        );
+    } else {
+        // 特定のカテゴリーの記事を表示
+        $slider_args = array(
+            'posts_per_page' => 5,
+            'cat' => absint($slider_category),
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'ignore_sticky_posts' => true,
+        );
+    }
+    
+    $slider_query = new WP_Query($slider_args);
+    
+    if ($slider_query->have_posts()) :
+    ?>
+    <div class="featured-slider">
+        <div class="slider-wrapper">
+            <?php while ($slider_query->have_posts()) : $slider_query->the_post(); ?>
+            <div class="slider-item">
+                <?php if (has_post_thumbnail()) : ?>
+                <div class="slider-image">
+                    <?php the_post_thumbnail('large'); ?>
+                </div>
+                <?php endif; ?>
+                <div class="slider-content">
+                    <?php
+                    // カテゴリー表示
+                    $categories = get_the_category();
+                    if (!empty($categories)) :
+                        echo '<a href="' . esc_url(get_category_link($categories[0]->term_id)) . '" class="slider-category">' . esc_html($categories[0]->name) . '</a>';
+                    endif;
+                    ?>
+                    <h2 class="slider-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+                    <div class="slider-meta">
+                        <span class="slider-date"><i class="far fa-calendar-alt" aria-hidden="true"></i> <?php echo get_the_date(); ?></span>
+                    </div>
+                    <div class="slider-excerpt"><?php echo wp_trim_words(get_the_excerpt(), 20); ?></div>
+                    <a href="<?php the_permalink(); ?>" class="slider-readmore"><?php esc_html_e('Read More', 'news-portal'); ?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+            </div>
+            <?php endwhile; ?>
+        </div>
+        <div class="slider-nav">
+            <button class="slider-prev" aria-label="<?php esc_attr_e('Previous slide', 'news-portal'); ?>"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+            <div class="slider-dots"></div>
+            <button class="slider-next" aria-label="<?php esc_attr_e('Next slide', 'news-portal'); ?>"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+        </div>
+    </div>
+    <?php
+    endif;
+    wp_reset_postdata();
 }
 
 /**

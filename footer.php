@@ -36,6 +36,22 @@
         </div>
         <?php endif; ?>
         
+        <div class="social-links">
+          <?php
+          if (has_nav_menu('social-menu')) {
+            wp_nav_menu(array(
+              'theme_location' => 'social-menu',
+              'menu_id' => 'social-menu',
+              'container' => 'nav',
+              'container_class' => 'social-navigation',
+              'link_before'     => '<span class="screen-reader-text">',
+              'link_after'      => '</span>',
+              'depth'           => 1,
+            ));
+          }
+          ?>
+        </div>
+        
         <div class="site-info">
           <?php
           // フッターメニューの表示
@@ -69,6 +85,10 @@
       </div><!-- .container -->
     </footer><!-- #colophon -->
   </div><!-- #page -->
+
+  <button id="scroll-top" class="scroll-top-btn" aria-label="<?php esc_attr_e('Scroll to top', 'news-portal'); ?>">
+    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+  </button>
 
   <?php wp_footer(); ?>
 </body>
