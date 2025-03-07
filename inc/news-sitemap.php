@@ -32,11 +32,11 @@ function news_portal_display_news_sitemap() {
 
     if ( isset( $wp_query->query_vars['news_sitemap'] ) && '1' === $wp_query->query_vars['news_sitemap'] ) {
         header( 'Content-Type: application/xml; charset=UTF-8' );
-        echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        echo '<?xml version="1.0" encoding="UTF-8"?>';
 
         // 名前空間の定義
         echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
-               xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">' . "\n";
+               xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">';
 
         // 過去2日間のニュース記事を取得
         $args = array(
@@ -62,22 +62,22 @@ function news_portal_display_news_sitemap() {
                     $category_name = $post_categories[0]->name;
                 }
 
-                echo '<url>' . "\n";
-                echo '  <loc>' . get_permalink() . '</loc>' . "\n";
-                echo '  <news:news>' . "\n";
-                echo '    <news:publication>' . "\n";
-                echo '      <news:name>' . esc_html( get_bloginfo( 'name' ) ) . '</news:name>' . "\n";
-                echo '      <news:language>' . esc_html( get_locale() ) . '</news:language>' . "\n";
-                echo '    </news:publication>' . "\n";
-                echo '    <news:publication_date>' . get_the_date( 'c' ) . '</news:publication_date>' . "\n";
-                echo '    <news:title>' . esc_html( get_the_title() ) . '</news:title>' . "\n";
+                echo '<url>';
+                echo '  <loc>' . get_permalink() . '</loc>';
+                echo '  <news:news>';
+                echo '    <news:publication>';
+                echo '      <news:name>' . esc_html( get_bloginfo( 'name' ) ) . '</news:name>';
+                echo '      <news:language>' . esc_html( get_locale() ) . '</news:language>';
+                echo '    </news:publication>';
+                echo '    <news:publication_date>' . get_the_date( 'c' ) . '</news:publication_date>';
+                echo '    <news:title>' . esc_html( get_the_title() ) . '</news:title>';
 
                 if ( ! empty( $category_name ) ) {
-                    echo '    <news:keywords>' . esc_html( $category_name ) . '</news:keywords>' . "\n";
+                    echo '    <news:keywords>' . esc_html( $category_name ) . '</news:keywords>';
                 }
 
-                echo '  </news:news>' . "\n";
-                echo '</url>' . "\n";
+                echo '  </news:news>';
+                echo '</url>';
             }
             wp_reset_postdata();
         }
