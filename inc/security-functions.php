@@ -85,7 +85,7 @@ add_action('init', 'news_portal_schedule_backups');
  * 管理者アカウントの保護
  */
 function news_portal_protect_admin_account($user_search) {
-    global $current_user;
+    global $current_user, $wpdb;
     
     // 現在のユーザーが管理者でない場合、管理者を検索結果から除外
     if (!current_user_can('manage_options')) {

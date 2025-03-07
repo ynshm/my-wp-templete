@@ -43,5 +43,5 @@
 
         endif;
         ?>
-    </div><!-- .page-content -->
+    </div><!-- .page-content --> -->
 </section><!-- .no-results -->

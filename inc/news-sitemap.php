@@ -252,6 +252,17 @@ if (!class_exists('WP_Customize_Multiple_Checkbox_Control')) {
             echo '<script>
                 jQuery(document).ready(function($) {
                     $(".customize-control-multiple-checkbox input[type=\'checkbox\']").on("change", function() {
+                        var checkbox_values = $(this).parents(".customize-control").find("input[type=\'checkbox\']:checked").map(
+                            function() {
+                                return this.value;
+                            }
+                        ).get().join(",");
+                        
+                        $(this).parents(".customize-control").find("input[type=hidden]").val(checkbox_values).trigger("change");
+                    });
+                });
+            </script>';
+                    $(".customize-control-multiple-checkbox input[type=\'checkbox\']").on("change", function() {
                         var checkbox_values = $(this).parents(".customize-control").find("input[type=\'checkbox\']:checked").map(function() {
                             return this.value;
                         }).get().join(",");
