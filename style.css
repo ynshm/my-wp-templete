@@ -1655,10 +1655,33 @@ pre code {
   animation: none;
 }
 
-/* レスポンシブ関連（メディアクエリの統合） */
+/* レスポンシブデザイン */
+/* モバイルファースト - 基本スタイル（小さな画面用） */
+.site-content .container {
+  display: flex;
+  flex-direction: column;
+}
+
+.content-area, .widget-area {
+  width: 100%;
+}
+
+/* タブレット（中間サイズ） */
+@media (min-width: 576px) {
+  .posts-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .recommended-posts-container,
+  .related-category-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* タブレット（横向き）/小型デスクトップ */
 @media (min-width: 768px) {
   .site-content .container {
-    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     gap: 2rem;
   }
@@ -1671,6 +1694,78 @@ pre code {
   .widget-area {
     flex: 0 0 calc(30% - 1rem);
     max-width: calc(30% - 1rem);
+  }
+  
+  .header-container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .site-branding {
+    margin-bottom: 0;
+  }
+  
+  .related-posts-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* デスクトップ（大きな画面） */
+@media (min-width: 992px) {
+  .posts-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .related-category-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 大型ディスプレイ */
+@media (min-width: 1200px) {
+  .container {
+    max-width: var(--container-width);
+    padding: 0 2rem;
+  }
+}
+
+/* 印刷用スタイル */
+@media print {
+  .site-header, .site-footer, .widget-area, .comments-area, 
+  .post-navigation, .social-share, .scroll-top-btn {
+    display: none;
+  }
+  
+  .content-area {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+  
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+  
+  .entry-content a:after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+  }
+  
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
   }
 }
 

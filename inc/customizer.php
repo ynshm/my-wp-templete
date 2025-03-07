@@ -237,6 +237,76 @@ function news_portal_customize_register($wp_customize) {
         'type' => 'checkbox',
     ));
     
+    // レスポンシブデザイン設定セクション
+    $wp_customize->add_section('news_portal_responsive_section', array(
+        'title' => __('Responsive Design', 'news-portal'),
+        'priority' => 60,
+    ));
+    
+    // モバイルメニューのブレイクポイント
+    $wp_customize->add_setting('mobile_menu_breakpoint', array(
+        'default' => 768,
+        'sanitize_callback' => 'absint',
+    ));
+    
+    $wp_customize->add_control('mobile_menu_breakpoint', array(
+        'label' => __('Mobile Menu Breakpoint (px)', 'news-portal'),
+        'section' => 'news_portal_responsive_section',
+        'type' => 'number',
+        'input_attrs' => array(
+            'min' => 320,
+            'max' => 1200,
+            'step' => 1,
+        ),
+        'description' => __('スクリーンサイズがこの値より小さい場合、モバイルメニューが表示されます。', 'news-portal'),
+    ));
+    
+    // モバイルでのヘッダーレイアウト
+    $wp_customize->add_setting('mobile_header_layout', array(
+        'default' => 'simplified',
+        'sanitize_callback' => 'news_portal_sanitize_select',
+    ));
+    
+    $wp_customize->add_control('mobile_header_layout', array(
+        'label' => __('Mobile Header Layout', 'news-portal'),
+        'section' => 'news_portal_responsive_section',
+        'type' => 'select',
+        'choices' => array(
+            'simplified' => __('Simplified (Hamburger Menu)', 'news-portal'),
+            'full' => __('Full Header (Scrollable)', 'news-portal'),
+        ),
+    ));
+    
+    // モバイルでのフォントサイズ調整
+    $wp_customize->add_setting('adjust_mobile_font_size', array(
+        'default' => true,
+        'sanitize_callback' => 'news_portal_sanitize_checkbox',
+    ));
+    
+    $wp_customize->add_control('adjust_mobile_font_size', array(
+        'label' => __('Automatically Adjust Font Sizes on Mobile', 'news-portal'),
+        'section' => 'news_portal_responsive_section',
+        'type' => 'checkbox',
+        'description' => __('モバイルデバイスでは、読みやすさのため自動的にフォントサイズを調整します。', 'news-portal'),
+    ));
+    
+    // モバイルでのサイドバー表示位置
+    $wp_customize->add_setting('mobile_sidebar_position', array(
+        'default' => 'bottom',
+        'sanitize_callback' => 'news_portal_sanitize_select',
+    ));
+    
+    $wp_customize->add_control('mobile_sidebar_position', array(
+        'label' => __('Mobile Sidebar Position', 'news-portal'),
+        'section' => 'news_portal_responsive_section',
+        'type' => 'select',
+        'choices' => array(
+            'bottom' => __('Below Content', 'news-portal'),
+            'top' => __('Above Content', 'news-portal'),
+            'hidden' => __('Hidden on Mobile', 'news-portal'),
+        ),
+    ));
+    
     // プリロードの有効化
     $wp_customize->add_setting('enable_preload', array(
         'default' => true,

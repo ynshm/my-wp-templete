@@ -1,320 +1,171 @@
-
-/**
- * メインJavaScriptファイル
- * モダンな機能とインタラクションを実装
- */
+// メインのJavaScriptファイル
 document.addEventListener('DOMContentLoaded', function() {
     // ヘッダースクロール効果
-    const siteHeader = document.querySelector('.site-header');
-    
-    if (siteHeader) {
+    const header = document.querySelector('.site-header');
+    if (header) {
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 30) {
-                siteHeader.classList.add('scrolled');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
             } else {
-                siteHeader.classList.remove('scrolled');
+                header.classList.remove('scrolled');
             }
         });
     }
-    
-    // スクロールトップボタン
-    const scrollToTopBtn = document.getElementById('scroll-to-top');
-    
-    if (scrollToTopBtn) {
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                scrollToTopBtn.classList.add('visible');
-            } else {
-                scrollToTopBtn.classList.remove('visible');
+
+    // メニュートグル
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menuContainer = document.querySelector('.menu-container');
+
+    if (menuToggle && menuContainer) {
+        menuToggle.addEventListener('click', function() {
+            const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+            menuToggle.setAttribute('aria-expanded', !isExpanded);
+            menuContainer.classList.toggle('toggled');
+        });
+    }
+
+    // 検索フォームトグル
+    const searchToggle = document.querySelector('.search-toggle');
+    const searchForm = document.querySelector('.header-search-form');
+
+    if (searchToggle && searchForm) {
+        searchToggle.addEventListener('click', function() {
+            const isExpanded = searchToggle.getAttribute('aria-expanded') === 'true';
+            searchToggle.setAttribute('aria-expanded', !isExpanded);
+            searchForm.classList.toggle('active');
+        });
+
+        // 検索フォーム以外をクリックしたら閉じる
+        document.addEventListener('click', function(event) {
+            if (!searchToggle.contains(event.target) && !searchForm.contains(event.target)) {
+                searchToggle.setAttribute('aria-expanded', 'false');
+                searchForm.classList.remove('active');
             }
         });
-        
-        scrollToTopBtn.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
+    }
+
+    // ダークモード切り替え
+    const themeSwitch = document.getElementById('theme-switch');
+    const body = document.body;
+
+    // ローカルストレージから現在のテーマを取得
+    const currentTheme = localStorage.getItem('theme');
+
+    // 現在のテーマを適用
+    if (currentTheme) {
+        body.classList.add(currentTheme);
+
+        if (currentTheme === 'dark-theme') {
+            if (themeSwitch) {
+                themeSwitch.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        }
+    }
+
+    // テーマ切り替えボタンのイベントリスナー
+    if (themeSwitch) {
+        themeSwitch.addEventListener('click', function() {
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                body.classList.add('light-theme');
+                themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light-theme');
+            } else {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+                themeSwitch.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark-theme');
+            }
+        });
+    }
+
+    // トップに戻るボタン
+    const scrollTopBtn = document.createElement('button');
+    scrollTopBtn.className = 'scroll-top-btn';
+    scrollTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+    scrollTopBtn.setAttribute('aria-label', 'トップに戻る');
+    document.body.appendChild(scrollTopBtn);
+
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 300) {
+            scrollTopBtn.classList.add('show');
+        } else {
+            scrollTopBtn.classList.remove('show');
+        }
+    });
+
+    scrollTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // ドロップダウンメニューのアクセシビリティ対応
+    const dropdownLinks = document.querySelectorAll('#primary-menu .menu-item-has-children > a');
+
+    if (dropdownLinks.length > 0) {
+        dropdownLinks.forEach(function(link) {
+            // ドロップダウンアイコンの作成
+            const dropdownIcon = document.createElement('span');
+            dropdownIcon.className = 'dropdown-icon';
+            link.appendChild(dropdownIcon);
+
+            // ARIA属性の追加
+            link.setAttribute('aria-haspopup', 'true');
+            link.setAttribute('aria-expanded', 'false');
+
+            // モバイル用のドロップダウントグル
+            link.addEventListener('click', function(e) {
+                if (window.innerWidth < 768) {
+                    e.preventDefault();
+                    const expanded = link.getAttribute('aria-expanded') === 'true';
+                    link.setAttribute('aria-expanded', !expanded);
+                    const subMenu = link.nextElementSibling;
+                    if (subMenu) {
+                        subMenu.style.display = expanded ? 'none' : 'block';
+                    }
+                }
             });
         });
     }
-    
-    // ヘッダー検索の切り替え
-    const searchToggle = document.querySelector('.search-toggle');
-    const headerSearchForm = document.querySelector('.header-search-form');
-    
-    if (searchToggle && headerSearchForm) {
-        searchToggle.addEventListener('click', function() {
-            const expanded = this.getAttribute('aria-expanded') === 'true' || false;
-            this.setAttribute('aria-expanded', !expanded);
-            headerSearchForm.classList.toggle('active');
-            
-            if (!expanded) {
-                // フォームが開いたら検索フィールドにフォーカスを当てる
-                const searchField = headerSearchForm.querySelector('input[type="search"]');
-                if (searchField) {
-                    setTimeout(() => searchField.focus(), 100);
-                }
-            }
-        });
-        
-        // 検索フォーム外クリックで閉じる
-        document.addEventListener('click', function(event) {
-            if (!headerSearchForm.contains(event.target) && !searchToggle.contains(event.target)) {
-                if (headerSearchForm.classList.contains('active')) {
-                    headerSearchForm.classList.remove('active');
-                    searchToggle.setAttribute('aria-expanded', 'false');
-                }
-            }
-        });
-    }
-    
-    // スライダー初期化
-    initFeaturedSlider();
-    
+
     // 画像の遅延読み込み
-    initLazyLoading();
-    
-    // リンク要素のホバーエフェクト最適化
-    optimizeHoverEffects();
-    
-    // テーマ切り替え（ダークモード/ライトモード）
-    initThemeToggle();
-});
+    const lazyImages = document.querySelectorAll('img.lazy-load');
 
-/**
- * フィーチャードスライダーの初期化
- */
-function initFeaturedSlider() {
-    const slider = document.querySelector('.featured-slider');
-    
-    if (!slider) return;
-    
-    const sliderWrapper = slider.querySelector('.slider-wrapper');
-    const sliderItems = slider.querySelectorAll('.slider-item');
-    const sliderNav = slider.querySelector('.slider-nav');
-    const sliderDots = slider.querySelector('.slider-dots');
-    const prevBtn = slider.querySelector('.slider-prev');
-    const nextBtn = slider.querySelector('.slider-next');
-    
-    let currentIndex = 0;
-    let intervalId;
-    const itemCount = sliderItems.length;
-    
-    // スライダードットの生成
-    for (let i = 0; i < itemCount; i++) {
-        const dot = document.createElement('button');
-        dot.classList.add('slider-dot');
-        dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-        if (i === 0) dot.classList.add('active');
-        
-        dot.addEventListener('click', function() {
-            goToSlide(i);
-        });
-        
-        sliderDots.appendChild(dot);
-    }
-    
-    // スライダーアイテムの初期表示
-    sliderItems.forEach((item, index) => {
-        item.style.display = index === 0 ? 'flex' : 'none';
-    });
-    
-    // 次のスライドへ
-    function nextSlide() {
-        let next = currentIndex + 1;
-        if (next >= itemCount) next = 0;
-        goToSlide(next);
-    }
-    
-    // 前のスライドへ
-    function prevSlide() {
-        let prev = currentIndex - 1;
-        if (prev < 0) prev = itemCount - 1;
-        goToSlide(prev);
-    }
-    
-    // 特定のスライドへ移動
-    function goToSlide(index) {
-        // 現在のスライドを非表示
-        sliderItems[currentIndex].style.display = 'none';
-        sliderDots.children[currentIndex].classList.remove('active');
-        
-        // 新しいスライドを表示
-        currentIndex = index;
-        sliderItems[currentIndex].style.display = 'flex';
-        sliderDots.children[currentIndex].classList.add('active');
-        
-        // 自動再生をリセット
-        resetInterval();
-    }
-    
-    // 自動再生の設定
-    function startInterval() {
-        intervalId = setInterval(nextSlide, 5000);
-    }
-    
-    // 自動再生のリセット
-    function resetInterval() {
-        clearInterval(intervalId);
-        startInterval();
-    }
-    
-    // ボタンイベントのバインド
-    prevBtn.addEventListener('click', prevSlide);
-    nextBtn.addEventListener('click', nextSlide);
-    
-    // スワイプ対応
-    let touchStartX = 0;
-    let touchEndX = 0;
-    
-    sliderWrapper.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    
-    sliderWrapper.addEventListener('touchend', function(e) {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
-    
-    function handleSwipe() {
-        if (touchEndX < touchStartX - 50) {
-            nextSlide();
-        } else if (touchEndX > touchStartX + 50) {
-            prevSlide();
-        }
-    }
-    
-    // 自動再生の開始
-    startInterval();
-    
-    // 一時停止（マウスオーバー時）
-    sliderWrapper.addEventListener('mouseenter', function() {
-        clearInterval(intervalId);
-    });
-    
-    sliderWrapper.addEventListener('mouseleave', function() {
-        startInterval();
-    });
-}
-
-/**
- * 画像の遅延読み込み機能
- */
-function initLazyLoading() {
     if ('IntersectionObserver' in window) {
-        const lazyImages = document.querySelectorAll('img.lazy-load');
-        
-        const imageObserver = new IntersectionObserver(function(entries, observer) {
+        const imageObserver = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
-                    const img = entry.target;
-                    if (img.dataset.src) {
-                        img.src = img.dataset.src;
+                    const lazyImage = entry.target;
+                    lazyImage.src = lazyImage.dataset.src;
+                    if (lazyImage.dataset.srcset) {
+                        lazyImage.srcset = lazyImage.dataset.srcset;
                     }
-                    img.classList.add('loaded');
-                    imageObserver.unobserve(img);
-                    
-                    // イベント発火（他のスクリプトで使用可能）
-                    const event = new Event('lazyloaded');
-                    img.dispatchEvent(event);
+                    lazyImage.classList.add('loaded');
+                    imageObserver.unobserve(lazyImage);
                 }
             });
         });
-        
-        lazyImages.forEach(function(img) {
-            imageObserver.observe(img);
+
+        lazyImages.forEach(function(lazyImage) {
+            imageObserver.observe(lazyImage);
         });
     } else {
-        // Intersection Observerが利用できない場合のフォールバック
-        const lazyLoad = function() {
-            const lazyImages = document.querySelectorAll('img.lazy-load');
-            const scrollTop = window.pageYOffset;
-            
-            lazyImages.forEach(function(img) {
-                if (img.offsetTop < window.innerHeight + scrollTop && !img.classList.contains('loaded')) {
-                    if (img.dataset.src) {
-                        img.src = img.dataset.src;
-                    }
-                    img.classList.add('loaded');
-                    
-                    // イベント発火
-                    const event = new Event('lazyloaded');
-                    img.dispatchEvent(event);
-                }
-            });
-        };
-        
-        document.addEventListener('scroll', lazyLoad);
-        window.addEventListener('resize', lazyLoad);
-        window.addEventListener('orientationChange', lazyLoad);
-        lazyLoad();
-    }
-}
-
-/**
- * リンク要素のホバーエフェクト最適化
- */
-function optimizeHoverEffects() {
-    const links = document.querySelectorAll('a');
-    
-    links.forEach(function(link) {
-        // ホバーは意図的なものだけに適用（タップデバイスでの偶発的なホバーを回避）
-        link.addEventListener('mouseenter', function() {
-            this.classList.add('hover-intent');
-        });
-        
-        link.addEventListener('mouseleave', function() {
-            this.classList.remove('hover-intent');
-        });
-    });
-}
-
-/**
- * テーマ切り替え機能の初期化
- */
-function initThemeToggle() {
-    // テーマ切り替えボタンを既存から選択
-    const themeToggle = document.getElementById('theme-switch');
-    
-    // ユーザー設定かシステム設定からテーマを取得
-    const userTheme = localStorage.getItem('theme');
-    const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    // テーマの初期設定
-    if (userTheme === 'dark' || (!userTheme && systemDarkMode)) {
-        document.body.classList.add('dark-theme');
-        if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-        document.body.classList.add('light-theme');
-    }
-    
-    // テーマ切り替え処理
-    if (themeToggle) {
-        themeToggle.addEventListener('click', function() {
-            if (document.body.classList.contains('dark-theme')) {
-                document.body.classList.remove('dark-theme');
-                document.body.classList.add('light-theme');
-                localStorage.setItem('theme', 'light');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            } else {
-                document.body.classList.remove('light-theme');
-                document.body.classList.add('dark-theme');
-                localStorage.setItem('theme', 'dark');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        // フォールバック（古いブラウザ用）
+        lazyImages.forEach(function(lazyImage) {
+            lazyImage.src = lazyImage.dataset.src;
+            if (lazyImage.dataset.srcset) {
+                lazyImage.srcset = lazyImage.dataset.srcset;
             }
+            lazyImage.classList.add('loaded');
         });
-    
-    // システムテーマ変更の監視
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        if (!localStorage.getItem('theme')) {
-            if (e.matches) {
-                document.body.classList.remove('light-theme');
-                document.body.classList.add('dark-theme');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                document.body.classList.remove('dark-theme');
-                document.body.classList.add('light-theme');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            }
-        }
-    });
-}
+    }
+
+    // タッチデバイス検出
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (isTouchDevice) {
+        document.body.classList.add('touch-device');
+    }
+});
