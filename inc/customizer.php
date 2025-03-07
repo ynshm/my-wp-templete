@@ -81,7 +81,7 @@ function news_portal_customize_register($wp_customize) {
     
     // プライマリーカラー
     $wp_customize->add_setting('primary_color', array(
-        'default' => '#0066cc',
+        'default' => '#3b82f6',
         'sanitize_callback' => 'sanitize_hex_color',
     ));
     
@@ -92,7 +92,7 @@ function news_portal_customize_register($wp_customize) {
     
     // セカンダリーカラー
     $wp_customize->add_setting('secondary_color', array(
-        'default' => '#ff6600',
+        'default' => '#ec4899',
         'sanitize_callback' => 'sanitize_hex_color',
     ));
     
@@ -367,14 +367,16 @@ add_action('customize_preview_init', 'news_portal_customize_preview_js');
  * カスタムCSSの出力
  */
 function news_portal_customizer_css() {
-    $primary_color = get_theme_mod('primary_color', '#0066cc');
-    $secondary_color = get_theme_mod('secondary_color', '#ff6600');
+    $primary_color = get_theme_mod('primary_color', '#3b82f6');
+    $secondary_color = get_theme_mod('secondary_color', '#ec4899');
     $custom_logo_width = get_theme_mod('custom_logo_width', 250);
     
     $css = "
         :root {
             --primary-color: {$primary_color};
             --secondary-color: {$secondary_color};
+            --gradient-primary: linear-gradient(135deg, {$primary_color}, " . adjust_brightness($primary_color, 20) . ");
+            --gradient-secondary: linear-gradient(135deg, {$secondary_color}, " . adjust_brightness($secondary_color, 20) . ");
         }
         
         .site-branding img.custom-logo {
@@ -390,7 +392,7 @@ function news_portal_customizer_css() {
         .tagcloud a:hover,
         .comment-respond .form-submit input,
         #scroll-up {
-            background-color: var(--primary-color);
+            background: var(--gradient-primary);
         }
         
         a:hover,
@@ -408,14 +410,70 @@ function news_portal_customizer_css() {
         .btn-secondary,
         .tags-links a:hover,
         .cat-links a:hover {
-            background-color: var(--secondary-color);
+            background: var(--gradient-secondary);
         }
         
         blockquote {
             border-left: 4px solid var(--primary-color);
+            background-color: rgba(" . hex2rgb($primary_color) . ", 0.05);
+        }
+        
+        button, 
+        .button,
+        .wp-block-button__link {
+            background: var(--gradient-primary);
+            box-shadow: 0 2px 10px rgba(" . hex2rgb($primary_color) . ", 0.3);
+        }
+        
+        button:hover, 
+        .button:hover,
+        .wp-block-button__link:hover {
+            background: var(--gradient-secondary);
+            box-shadow: 0 4px 12px rgba(" . hex2rgb($secondary_color) . ", 0.4);
         }
     ";
     
     wp_add_inline_style('news-portal-style', $css);
 }
 add_action('wp_enqueue_scripts', 'news_portal_customizer_css');
+
+
+/**
+ * Helper function to adjust brightness of hex color
+ */
+function adjust_brightness($hex, $steps) {
+    // Remove hash symbol if present
+    $hex = str_replace('#', '', $hex);
+    
+    // Parse hex color to RGB
+    $r = hexdec(substr($hex, 0, 2));
+    $g = hexdec(substr($hex, 2, 2));
+    $b = hexdec(substr($hex, 4, 2));
+    
+    // Adjust brightness
+    $r = max(0, min(255, $r + $steps));
+    $g = max(0, min(255, $g + $steps));
+    $b = max(0, min(255, $b + $steps));
+    
+    // Convert back to hex
+    return '#' . sprintf('%02x%02x%02x', $r, $g, $b);
+}
+
+/**
+ * Helper function to convert hex to RGB
+ */
+function hex2rgb($hex) {
+    $hex = str_replace('#', '', $hex);
+    
+    if (strlen($hex) == 3) {
+        $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
+        $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
+        $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
+    } else {
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+    }
+    
+    return "$r, $g, $b";
+}

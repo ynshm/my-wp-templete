@@ -86,7 +86,7 @@
     </footer><!-- #colophon -->
   </div><!-- #page -->
 
-  <button id="scroll-top" class="scroll-top-btn" aria-label="<?php esc_attr_e('Scroll to top', 'news-portal'); ?>">
+  <button id="scroll-top" class="scroll-top-btn pulse-animation" aria-label="<?php esc_attr_e('Scroll to top', 'news-portal'); ?>">
     <i class="fas fa-arrow-up" aria-hidden="true"></i>
   </button>
 
