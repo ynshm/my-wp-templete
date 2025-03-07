@@ -1,4 +1,3 @@
-
 <?php
 /**
  * サイトマップ送信機能
@@ -25,10 +24,10 @@ function news_portal_submit_sitemap() {
     // Yandexへのサイトマップ送信
     $ping_url = 'https://webmaster.yandex.ru/ping?sitemap=' . urlencode( $sitemap_url );
     wp_remote_get( $ping_url );
-    
+
     // 最終送信日時を更新
     update_option('news_portal_sitemap_last_submitted', current_time('mysql'));
-    
+
     return true;
 }
 
@@ -47,39 +46,57 @@ function news_portal_sitemap_admin_menu() {
 add_action('admin_menu', 'news_portal_sitemap_admin_menu');
 
 /**
- * サイトマップ送信管理ページ
+ * 管理画面ページの表示
  */
 function news_portal_sitemap_admin_page() {
-    // 送信処理
-    if (isset($_POST['submit_sitemap']) && current_user_can('manage_options')) {
-        check_admin_referer('news_portal_submit_sitemap');
-
-        $result = news_portal_submit_sitemap();
-        if ($result) {
-            echo '<div class="notice notice-success is-dismissible"><p>' . __('Sitemap successfully submitted to search engines.', 'news-portal') . '</p></div>';
-        }
+    // 権限チェック
+    if (!current_user_can('manage_options')) {
+        return;
     }
 
+    // サイトマップ送信処理
+    if (isset($_POST['submit_sitemap']) && check_admin_referer('news_portal_submit_sitemap_nonce')) {
+        news_portal_submit_sitemap();
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Sitemap submitted successfully!', 'news-portal') . '</p></div>';
+    }
+
+    // 最終送信日時の取得
     $last_submitted = get_option('news_portal_sitemap_last_submitted');
     ?>
     <div class="wrap">
-        <h1><?php echo esc_html__('Sitemap Submission', 'news-portal'); ?></h1>
-
-        <p><?php echo esc_html__('Use this page to manually submit your sitemap to search engines.', 'news-portal'); ?></p>
-
-        <?php if ($last_submitted) : ?>
-            <p><?php echo sprintf(__('Last submitted: %s', 'news-portal'), $last_submitted); ?></p>
-        <?php endif; ?>
+        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
 
         <form method="post" action="">
-            <?php wp_nonce_field('news_portal_submit_sitemap'); ?>
+            <?php wp_nonce_field('news_portal_submit_sitemap_nonce'); ?>
+
+            <p><?php esc_html_e('Click the button below to submit your sitemap to search engines.', 'news-portal'); ?></p>
+
+            <?php if ($last_submitted) : ?>
+                <p><?php printf(esc_html__('Last submitted on: %s', 'news-portal'), $last_submitted); ?></p>
+            <?php endif; ?>
+
             <p>
-                <input type="submit" name="submit_sitemap" class="button button-primary" value="<?php echo esc_attr__('Submit Sitemap Now', 'news-portal'); ?>">
+                <input type="submit" name="submit_sitemap" class="button button-primary" value="<?php esc_attr_e('Submit Sitemap', 'news-portal'); ?>">
             </p>
         </form>
     </div>
     <?php
 }
+
+/**
+ * 新規投稿公開時にサイトマップを送信
+ */
+function news_portal_auto_submit_on_publish($new_status, $old_status, $post) {
+    // 投稿が下書きから公開に変更された場合
+    if ('publish' === $new_status && 'publish' !== $old_status && 'post' === $post->post_type) {
+        // サイトマップの送信が1時間以内に行われていない場合のみ実行
+        $last_submitted = get_option('news_portal_sitemap_last_submitted');
+        if (!$last_submitted || (strtotime($last_submitted) < (time() - 3600))) {
+            news_portal_submit_sitemap();
+        }
+    }
+}
+add_action('transition_post_status', 'news_portal_auto_submit_on_publish', 10, 3);
 
 /**
  * 投稿保存時にサイトマップ送信
@@ -120,3 +137,5 @@ function news_portal_sitemap_admin_notice() {
     }
 }
 add_action('admin_notices', 'news_portal_sitemap_admin_notice');
+
+?>

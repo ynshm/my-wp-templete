@@ -4,6 +4,19 @@
  * Theme functions and definitions
  */
 
+// デバッグモード（問題解決後に削除してください）
+@ini_set('display_errors', 1);
+@ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// エラーをログに記録
+function custom_error_handler($errno, $errstr, $errfile, $errline) {
+    $error_message = "Error: [$errno] $errstr - $errfile:$errline";
+    error_log($error_message . PHP_EOL, 3, dirname(__FILE__) . '/debug.log');
+    return false;
+}
+set_error_handler('custom_error_handler');
+
 if (!function_exists('custom_theme_setup')) :
   /**
    * Sets up theme defaults and registers support for various WordPress features.
