@@ -15,12 +15,46 @@ document.addEventListener('DOMContentLoaded', function() {
     // メニュートグル
     const menuToggle = document.querySelector('.menu-toggle');
     const menuContainer = document.querySelector('.menu-container');
+    const body = document.body;
 
     if (menuToggle && menuContainer) {
         menuToggle.addEventListener('click', function() {
             const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
             menuToggle.setAttribute('aria-expanded', !isExpanded);
             menuContainer.classList.toggle('toggled');
+            
+            // モバイルメニュー表示時に背景をスクロール不可に
+            if (!isExpanded) {
+                body.style.overflow = 'hidden';
+                
+                // メニューを表示するときのアニメーション
+                menuContainer.style.opacity = '0';
+                menuContainer.style.display = 'block';
+                setTimeout(function() {
+                    menuContainer.style.opacity = '1';
+                }, 10);
+            } else {
+                body.style.overflow = '';
+                
+                // メニューを閉じるときのアニメーション
+                menuContainer.style.opacity = '0';
+                setTimeout(function() {
+                    if (!menuToggle.getAttribute('aria-expanded') === 'true') {
+                        menuContainer.style.display = 'none';
+                    }
+                }, 300);
+            }
+        });
+        
+        // メニュー以外をクリックしたらメニューを閉じる
+        document.addEventListener('click', function(event) {
+            if (menuContainer.classList.contains('toggled') && 
+                !menuToggle.contains(event.target) && 
+                !menuContainer.contains(event.target)) {
+                menuToggle.setAttribute('aria-expanded', 'false');
+                menuContainer.classList.remove('toggled');
+                body.style.overflow = '';
+            }
         });
     }
 

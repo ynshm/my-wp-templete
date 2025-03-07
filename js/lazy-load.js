@@ -1,89 +1,100 @@
+
 /**
- * 画像の遅延読み込み機能
- * パフォーマンス向上のため画像の読み込みを必要なタイミングまで遅らせる
+ * 画像の遅延読み込み処理
  */
-(function() {
-    'use strict';
-
-    // 画像の遅延読み込み実装
-    document.addEventListener('DOMContentLoaded', function() {
-        if (!('IntersectionObserver' in window)) {
-            // IntersectionObserver APIをサポートしていない場合のフォールバック
-            const lazyImages = document.querySelectorAll('img[data-src]');
-            lazyImages.forEach(function(img) {
-                img.setAttribute('src', img.getAttribute('data-src'));
-                if (img.getAttribute('data-srcset')) {
-                    img.setAttribute('srcset', img.getAttribute('data-srcset'));
-                }
-                img.onload = function() {
-                    img.classList.add('loaded');
-                };
-            });
-            return;
-        }
-
-        // IntersectionObserver APIを使用した実装
-        const lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+document.addEventListener('DOMContentLoaded', function() {
+    // 遅延読み込み対象の画像を選択
+    const lazyImages = document.querySelectorAll('img.lazy');
+    
+    // Intersection Observer APIをサポートしているかどうかをチェック
+    if ('IntersectionObserver' in window) {
+        // 画像が表示領域に入ったときの処理を設定
+        const imageObserver = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
+                // 表示領域に入った場合
                 if (entry.isIntersecting) {
                     const lazyImage = entry.target;
-
-                    // レスポンシブ対応 - 現在の表示サイズに最適なサイズの画像を読み込む
-                    const deviceWidth = window.innerWidth;
-                    let imgSrc = lazyImage.getAttribute('data-src');
-
-                    if (deviceWidth <= 576 && lazyImage.getAttribute('data-src-small')) {
-                        imgSrc = lazyImage.getAttribute('data-src-small');
-                    } else if (deviceWidth <= 992 && lazyImage.getAttribute('data-src-medium')) {
-                        imgSrc = lazyImage.getAttribute('data-src-medium');
+                    
+                    // data-src属性の値をsrc属性に設定
+                    if (lazyImage.dataset.src) {
+                        lazyImage.src = lazyImage.dataset.src;
                     }
-
-                    // 画像のソースを設定
-                    lazyImage.setAttribute('src', imgSrc);
-
-                    // srcsetがある場合は設定
-                    if (lazyImage.getAttribute('data-srcset')) {
-                        lazyImage.setAttribute('srcset', lazyImage.getAttribute('data-srcset'));
+                    
+                    // data-srcset属性の値をsrcset属性に設定
+                    if (lazyImage.dataset.srcset) {
+                        lazyImage.srcset = lazyImage.dataset.srcset;
                     }
-
-                    // 読み込み完了後にアニメーションクラスを適用
-                    lazyImage.onload = function() {
-                        lazyImage.classList.add('loaded');
-                    };
-
-                    observer.unobserve(lazyImage);
+                    
+                    // lazyクラスを削除してloadedクラスを追加
+                    lazyImage.classList.remove('lazy');
+                    lazyImage.classList.add('loaded');
+                    
+                    // この画像の監視を解除
+                    imageObserver.unobserve(lazyImage);
                 }
             });
         }, {
-            rootMargin: '200px 0px',  // ビューポートの200px手前で読み込みを開始
+            // ビューポートから50px手前に入った時点で読み込みを開始
+            rootMargin: '50px 0px',
             threshold: 0.01
         });
-
-        // すべての遅延読み込み画像を監視
-        const lazyImages = document.querySelectorAll('img[data-src]');
+        
+        // 対象の画像を監視開始
         lazyImages.forEach(function(lazyImage) {
-            lazyImageObserver.observe(lazyImage);
+            imageObserver.observe(lazyImage);
         });
-
-        // バックグラウンド画像の遅延読み込み
-        const lazyBackgrounds = document.querySelectorAll('.lazy-background');
-
-        const lazyBackgroundObserver = new IntersectionObserver(function(entries, observer) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting) {
-                    const lazyBackground = entry.target;
-                    lazyBackground.style.backgroundImage = `url(${lazyBackground.getAttribute('data-background')})`;
-                    lazyBackground.classList.add('loaded');
-                    observer.unobserve(lazyBackground);
+    } else {
+        // Intersection Observerがサポートされていない場合のフォールバック
+        // 一定間隔でスクロール位置をチェックして画像を読み込む
+        let lazyLoadThrottleTimeout;
+        
+        function lazyLoad() {
+            if (lazyLoadThrottleTimeout) {
+                clearTimeout(lazyLoadThrottleTimeout);
+            }
+            
+            lazyLoadThrottleTimeout = setTimeout(function() {
+                const scrollTop = window.pageYOffset;
+                
+                lazyImages.forEach(function(lazyImage) {
+                    if (lazyImage.offsetTop < (window.innerHeight + scrollTop)) {
+                        if (lazyImage.dataset.src) {
+                            lazyImage.src = lazyImage.dataset.src;
+                        }
+                        if (lazyImage.dataset.srcset) {
+                            lazyImage.srcset = lazyImage.dataset.srcset;
+                        }
+                        lazyImage.classList.remove('lazy');
+                        lazyImage.classList.add('loaded');
+                    }
+                });
+                
+                // すべての画像が読み込まれたらイベントリスナーを削除
+                if (lazyImages.length === 0) { 
+                    document.removeEventListener('scroll', lazyLoad);
+                    window.removeEventListener('resize', lazyLoad);
+                    window.removeEventListener('orientationChange', lazyLoad);
                 }
-            });
-        }, {
-            rootMargin: '200px 0px',
-            threshold: 0.01
+            }, 20);
+        }
+        
+        // スクロール、リサイズ、画面回転時に処理を実行
+        document.addEventListener('scroll', lazyLoad);
+        window.addEventListener('resize', lazyLoad);
+        window.addEventListener('orientationChange', lazyLoad);
+        
+        // 初回実行
+        lazyLoad();
+    }
+    
+    // 既に画面に表示されている画像に対してクラスを適用（フェードイン効果用）
+    function handleVisibleImages() {
+        const loadedImages = document.querySelectorAll('img.loaded');
+        loadedImages.forEach(function(img) {
+            img.style.opacity = '1';
         });
-
-        lazyBackgrounds.forEach(function(lazyBackground) {
-            lazyBackgroundObserver.observe(lazyBackground);
-        });
-    });
-})();
+    }
+    
+    // DOMContentLoadedイベント後に実行
+    handleVisibleImages();
+});

@@ -29,61 +29,69 @@
 
     <header id="masthead" class="site-header">
         <div class="header-container container">
-            <div class="site-branding">
-                <?php
-                the_custom_logo();
-                if ( is_front_page() && is_home() ) :
-                    ?>
-                    <h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
+            <div class="logo-header-container">
+                <div class="site-branding">
                     <?php
-                else :
-                    ?>
-                    <p class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></p>
-                    <?php
-                endif;
-                $news_portal_description = get_bloginfo( 'description', 'display' );
-                if ( $news_portal_description || is_customize_preview() ) :
-                    ?>
-                    <p class="site-description"><?php echo $news_portal_description; // phpcs:ignore. ?></p>
-                <?php endif; ?>
-            </div><!-- .site-branding -->
-
-            <nav id="site-navigation" class="main-navigation">
-                <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
-                    <span><?php esc_html_e( 'Menu', 'news-portal' ); ?></span>
-                    <div class="hamburger-icon">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                    the_custom_logo();
+                    if ( is_front_page() && is_home() ) :
+                        ?>
+                        <h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
+                        <?php
+                    else :
+                        ?>
+                        <p class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></p>
+                        <?php
+                    endif;
+                    $news_portal_description = get_bloginfo( 'description', 'display' );
+                    if ( $news_portal_description || is_customize_preview() ) :
+                        ?>
+                        <p class="site-description"><?php echo $news_portal_description; // phpcs:ignore. ?></p>
+                    <?php endif; ?>
+                </div><!-- .site-branding -->
+                
+                <div class="header-mobile-buttons">
+                    <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                        <span><?php esc_html_e( 'Menu', 'news-portal' ); ?></span>
+                    </button>
+                    <button class="search-toggle" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle search', 'news-portal'); ?>">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="navi-menu-container">
+                <nav id="site-navigation" class="main-navigation">
+                    <div class="menu-container">
+                        <?php
+                        wp_nav_menu(
+                            array(
+                                'theme_location' => 'menu-1',
+                                'menu_id'        => 'primary-menu',
+                                'container' => 'div',
+                                'container_class' => 'navi',
+                            )
+                        );
+                        ?>
                     </div>
-                </button>
-                <div class="menu-container">
-                    <?php
-                    wp_nav_menu(
-                        array(
-                            'theme_location' => 'menu-1',
-                            'menu_id'        => 'primary-menu',
-                        )
-                    );
-                    ?>
+                </nav><!-- #site-navigation -->
+                
+                <div class="header-actions">
+                    <button class="search-toggle" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle search', 'news-portal'); ?>">
+                        <i class="fas fa-search"></i>
+                    </button>
 
-                    <div class="header-actions">
-                        <button class="search-toggle" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle search', 'news-portal'); ?>">
-                            <i class="fas fa-search"></i>
+                    <div class="theme-switch-wrapper">
+                        <button id="theme-switch" class="theme-switch" aria-label="<?php esc_attr_e('Switch theme', 'news-portal'); ?>">
+                            <i class="fas fa-moon"></i>
                         </button>
-
-                        <div class="theme-switch-wrapper">
-                            <button id="theme-switch" class="theme-switch" aria-label="<?php esc_attr_e('Switch theme', 'news-portal'); ?>">
-                                <i class="fas fa-moon"></i>
-                            </button>
-                        </div>
                     </div>
                 </div>
-
-                <div class="header-search-form">
-                    <?php get_search_form(); ?>
-                </div>
-            </nav><!-- #site-navigation -->
+            </div>
+            
+            <div class="header-search-form">
+                <?php get_search_form(); ?>
+            </div>
         </div>
     </header><!-- #masthead -->
 
