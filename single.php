@@ -95,17 +95,24 @@
               </article>
               <?php
               endwhile;
-the_post_navigation(
-  array(
-    'prev_text' => '<span class="nav-subtitle">' . esc_html__('Previous:', 'news-portal') . '</span> <span class="nav-title">%title</span>',
-    'next_text' => '<span class="nav-subtitle">' . esc_html__('Next:', 'news-portal') . '</span> <span class="nav-title">%title</span>',
-  )
-);
+              wp_reset_postdata();
+          endif;
+          
+          echo '</div>';
+          echo '</div>';
+      }
+      
+      // 前後の記事のナビゲーション
+      the_post_navigation(
+          array(
+              'prev_text' => '<span class="nav-subtitle">' . esc_html__('Previous:', 'news-portal') . '</span> <span class="nav-title">%title</span>',
+              'next_text' => '<span class="nav-subtitle">' . esc_html__('Next:', 'news-portal') . '</span> <span class="nav-title">%title</span>',
+          )
+      );
 
-// If comments are open or we have at least one comment, load up the comment template.
-if (comments_open() || get_comments_number()) :
-  comments_template();
-endif;();
+      // コメントテンプレートの読み込み
+      if (comments_open() || get_comments_number()) :
+          comments_template();
       endif;
     endwhile; // End of the loop.
     ?>

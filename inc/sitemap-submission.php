@@ -1,3 +1,4 @@
+
 <?php
 /**
  * サイトマップ送信機能
@@ -24,6 +25,11 @@ function news_portal_submit_sitemap() {
     // Yandexへのサイトマップ送信
     $ping_url = 'https://webmaster.yandex.ru/ping?sitemap=' . urlencode( $sitemap_url );
     wp_remote_get( $ping_url );
+    
+    // 最終送信日時を更新
+    update_option('news_portal_sitemap_last_submitted', current_time('mysql'));
+    
+    return true;
 }
 
 /**

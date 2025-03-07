@@ -1,3 +1,4 @@
+
 <?php
 /**
  * ニュース専用サイトマップの生成
@@ -31,7 +32,7 @@ function news_portal_display_news_sitemap() {
 
     if ( isset( $wp_query->query_vars['news_sitemap'] ) && '1' === $wp_query->query_vars['news_sitemap'] ) {
         header( 'Content-Type: application/xml; charset=UTF-8' );
-        echo '<?xml version="1.0" encoding="UTF-8"' . "\n";
+        echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 
         // 名前空間の定義
         echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 

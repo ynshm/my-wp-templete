@@ -478,6 +478,11 @@ function news_portal_generate_highlights($content) {
 }
 add_action('wp_head', 'news_portal_structured_data', 10);
 
+// 関数終了用ダミー関数
+function news_portal_dummy_function() {
+    return true;
+}
+
 /**
  * OGPメタタグを追加
  */

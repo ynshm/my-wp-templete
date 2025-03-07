@@ -1,65 +1,68 @@
 
 <?php
 /**
- * セキュリティ機能
+ * セキュリティ強化機能
  *
  * @package News_Portal
  */
 
 /**
- * ログイン試行回数の制限
- */
-function news_portal_limit_login_attempts() {
-    // 実際の実装ではログイン試行回数を記録・制限する機能が必要
-}
-add_action('wp_login_failed', 'news_portal_limit_login_attempts');
-
-/**
  * XMLRPCの無効化
  */
 function news_portal_disable_xmlrpc() {
-    add_filter('xmlrpc_enabled', '__return_false');
+    // カスタマイザーの設定を取得
+    $disable_xmlrpc = get_theme_mod('security_disable_xmlrpc', true);
+    
+    if ($disable_xmlrpc) {
+        // XMLRPCを無効化
+        add_filter('xmlrpc_enabled', '__return_false');
+        
+        // pingback pingを無効化
+        add_filter('wp_headers', 'news_portal_remove_pingback_header');
+        
+        // XMLRPCメソッドを無効化
+        add_filter('xmlrpc_methods', 'news_portal_disable_xmlrpc_methods');
+    }
 }
 add_action('init', 'news_portal_disable_xmlrpc');
 
 /**
- * WordPress バージョン情報の非表示
+ * Pingbackヘッダーの削除
  */
-function news_portal_remove_wp_version() {
-    return '';
+function news_portal_remove_pingback_header($headers) {
+    unset($headers['X-Pingback']);
+    return $headers;
 }
-add_filter('the_generator', 'news_portal_remove_wp_version');
 
 /**
- * ログインページへのリダイレクト
+ * XMLRPCメソッドの無効化
  */
-function news_portal_redirect_to_login() {
-    // author/?=X のような攻撃からの保護
-    if (isset($_GET['author'])) {
-        wp_redirect(home_url('/wp-login.php'));
-        exit;
-    }
+function news_portal_disable_xmlrpc_methods($methods) {
+    unset($methods['pingback.ping']);
+    unset($methods['pingback.extensions.getPingbacks']);
+    return $methods;
 }
-add_action('template_redirect', 'news_portal_redirect_to_login');
 
 /**
  * セキュリティヘッダーの追加
  */
 function news_portal_security_headers() {
-    // X-Frame-Options ヘッダー
-    header('X-Frame-Options: SAMEORIGIN');
+    // カスタマイザーの設定を取得
+    $security_headers_enabled = get_theme_mod('security_headers_enabled', true);
     
-    // X-XSS-Protection ヘッダー
-    header('X-XSS-Protection: 1; mode=block');
-    
-    // X-Content-Type-Options ヘッダー
-    header('X-Content-Type-Options: nosniff');
-    
-    // Referrer-Policy ヘッダー
-    header('Referrer-Policy: strict-origin-when-cross-origin');
-    
-    // Content-Security-Policy ヘッダー (必要に応じてカスタマイズ)
-    // header("Content-Security-Policy: default-src 'self';");
+    if ($security_headers_enabled) {
+        // X-Frame-Options ヘッダー（クリックジャッキング対策）
+        header('X-Frame-Options: SAMEORIGIN');
+        
+        // X-XSS-Protection ヘッダー（XSS対策）
+        header('X-XSS-Protection: 1; mode=block');
+        
+        // X-Content-Type-Options ヘッダー（MIMEタイプスニッフィング対策）
+        header('X-Content-Type-Options: nosniff');
+        
+        // Referrer-Policy ヘッダー
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+    }
 }
 add_action('send_headers', 'news_portal_security_headers');
 
@@ -146,22 +149,16 @@ function news_portal_security_customizer($wp_customize) {
     
     $wp_customize->add_control('security_headers_enabled', array(
         'label' => __('Enable Security Headers', 'news-portal'),
-        'description' => __('Add security headers to HTTP responses.', 'news-portal'),
-        'section' => 'news_portal_security_section',
-        'type' => 'checkbox',
-    ));
-    
-    // 自動バックアップの設定
-    $wp_customize->add_setting('security_auto_backup', array(
-        'default' => true,
-        'sanitize_callback' => 'news_portal_sanitize_checkbox',
-    ));
-    
-    $wp_customize->add_control('security_auto_backup', array(
-        'label' => __('Enable Automatic Backups', 'news-portal'),
-        'description' => __('Schedule regular database backups.', 'news-portal'),
+        'description' => __('Add security-related HTTP headers to responses.', 'news-portal'),
         'section' => 'news_portal_security_section',
         'type' => 'checkbox',
     ));
 }
 add_action('customize_register', 'news_portal_security_customizer');
+
+/**
+ * チェックボックスの正規化
+ */
+function news_portal_sanitize_checkbox($checked) {
+    return (isset($checked) && true == $checked) ? true : false;
+}
