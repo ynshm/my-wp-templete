@@ -114,4 +114,3 @@ function news_portal_sitemap_admin_notice() {
     }
 }
 add_action('admin_notices', 'news_portal_sitemap_admin_notice');
-?>
