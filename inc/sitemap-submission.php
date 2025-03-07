@@ -6,22 +6,24 @@
  */
 
 /**
- * 検索エンジンにサイトマップを送信
+ * サイトマップURLの自動送信
  */
 function news_portal_submit_sitemap() {
-    $sitemap_url = esc_url(home_url('/sitemap.xml'));
+    // サイトマップのURL（WordPressのデフォルトサイトマップまたはプラグインによるもの）
+    $sitemap_url = home_url( '/sitemap.xml' );
 
-    // Googleへのサイトマップ送信
-    $google_url = 'https://www.google.com/ping?sitemap=' . urlencode($sitemap_url);
-    wp_remote_get($google_url);
+    // Googleへのサイトマップ送信（Search Console APIを使用する場合は認証が必要）
+    // ここではシンプルに通知のみを行う
+    $ping_url = 'https://www.google.com/ping?sitemap=' . urlencode( $sitemap_url );
+    wp_remote_get( $ping_url );
 
     // Bingへのサイトマップ送信
-    $bing_url = 'https://www.bing.com/ping?sitemap=' . urlencode($sitemap_url);
-    wp_remote_get($bing_url);
+    $ping_url = 'https://www.bing.com/ping?sitemap=' . urlencode( $sitemap_url );
+    wp_remote_get( $ping_url );
 
-    update_option('news_portal_sitemap_last_submitted', current_time('mysql'));
-
-    return true;
+    // Yandexへのサイトマップ送信
+    $ping_url = 'https://webmaster.yandex.ru/ping?sitemap=' . urlencode( $sitemap_url );
+    wp_remote_get( $ping_url );
 }
 
 /**
@@ -74,33 +76,30 @@ function news_portal_sitemap_admin_page() {
 }
 
 /**
- * 投稿保存時に自動でサイトマップを送信
+ * 投稿保存時にサイトマップ送信
  */
-function news_portal_auto_submit_sitemap($post_id) {
-    // 自動下書き保存の場合は実行しない
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+function news_portal_submit_sitemap_on_save( $post_id ) {
+    // 自動下書き保存や投稿の改訂では送信しない
+    if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
         return;
     }
 
-    // 投稿タイプが公開されていない場合は実行しない
-    if (get_post_status($post_id) !== 'publish') {
+    // 投稿タイプが公開されるものかチェック
+    $post_type = get_post_type( $post_id );
+    if ( ! is_post_type_viewable( $post_type ) ) {
         return;
     }
 
-    // 前回の送信から24時間経過していない場合は実行しない
-    $last_submitted = get_option('news_portal_sitemap_last_submitted');
-    if ($last_submitted) {
-        $last_time = strtotime($last_submitted);
-        $current_time = current_time('timestamp');
-
-        if (($current_time - $last_time) < DAY_IN_SECONDS) {
-            return;
-        }
+    // 投稿ステータスが公開されているかチェック
+    $post_status = get_post_status( $post_id );
+    if ( 'publish' !== $post_status ) {
+        return;
     }
 
+    // サイトマップ送信
     news_portal_submit_sitemap();
 }
-add_action('save_post', 'news_portal_auto_submit_sitemap');
+add_action( 'save_post', 'news_portal_submit_sitemap_on_save' );
 
 /**
  * Display admin notice after manual submission
@@ -115,3 +114,4 @@ function news_portal_sitemap_admin_notice() {
     }
 }
 add_action('admin_notices', 'news_portal_sitemap_admin_notice');
+?>
