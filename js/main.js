@@ -9,10 +9,60 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (siteHeader) {
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) {
+            if (window.scrollY > 30) {
                 siteHeader.classList.add('scrolled');
             } else {
                 siteHeader.classList.remove('scrolled');
+            }
+        });
+    }
+    
+    // スクロールトップボタン
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+    
+    if (scrollToTopBtn) {
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+    
+    // ヘッダー検索の切り替え
+    const searchToggle = document.querySelector('.search-toggle');
+    const headerSearchForm = document.querySelector('.header-search-form');
+    
+    if (searchToggle && headerSearchForm) {
+        searchToggle.addEventListener('click', function() {
+            const expanded = this.getAttribute('aria-expanded') === 'true' || false;
+            this.setAttribute('aria-expanded', !expanded);
+            headerSearchForm.classList.toggle('active');
+            
+            if (!expanded) {
+                // フォームが開いたら検索フィールドにフォーカスを当てる
+                const searchField = headerSearchForm.querySelector('input[type="search"]');
+                if (searchField) {
+                    setTimeout(() => searchField.focus(), 100);
+                }
+            }
+        });
+        
+        // 検索フォーム外クリックで閉じる
+        document.addEventListener('click', function(event) {
+            if (!headerSearchForm.contains(event.target) && !searchToggle.contains(event.target)) {
+                if (headerSearchForm.classList.contains('active')) {
+                    headerSearchForm.classList.remove('active');
+                    searchToggle.setAttribute('aria-expanded', 'false');
+                }
             }
         });
     }
@@ -222,13 +272,8 @@ function optimizeHoverEffects() {
  * テーマ切り替え機能の初期化
  */
 function initThemeToggle() {
-    // テーマ切り替えボタンを追加
-    const themeToggle = document.createElement('button');
-    themeToggle.id = 'theme-toggle';
-    themeToggle.className = 'theme-toggle-btn';
-    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-    themeToggle.setAttribute('aria-label', 'Toggle dark mode');
-    document.body.appendChild(themeToggle);
+    // テーマ切り替えボタンを既存から選択
+    const themeToggle = document.getElementById('theme-switch');
     
     // ユーザー設定かシステム設定からテーマを取得
     const userTheme = localStorage.getItem('theme');
@@ -237,25 +282,26 @@ function initThemeToggle() {
     // テーマの初期設定
     if (userTheme === 'dark' || (!userTheme && systemDarkMode)) {
         document.body.classList.add('dark-theme');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
     } else {
         document.body.classList.add('light-theme');
     }
     
     // テーマ切り替え処理
-    themeToggle.addEventListener('click', function() {
-        if (document.body.classList.contains('dark-theme')) {
-            document.body.classList.remove('dark-theme');
-            document.body.classList.add('light-theme');
-            localStorage.setItem('theme', 'light');
-            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        } else {
-            document.body.classList.remove('light-theme');
-            document.body.classList.add('dark-theme');
-            localStorage.setItem('theme', 'dark');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-    });
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            if (document.body.classList.contains('dark-theme')) {
+                document.body.classList.remove('dark-theme');
+                document.body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                document.body.classList.remove('light-theme');
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
     
     // システムテーマ変更の監視
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {

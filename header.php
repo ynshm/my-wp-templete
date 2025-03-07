@@ -1,4 +1,3 @@
-
 <?php
 /**
  * ヘッダーテンプレート
@@ -28,27 +27,34 @@
     <a class="skip-link screen-reader-text" href="#primary"><?php esc_html_e( 'Skip to content', 'news-portal' ); ?></a>
 
     <header id="masthead" class="site-header">
-        <div class="container header-container">
+        <div class="header-container container">
             <div class="site-branding">
                 <?php
-                if ( has_custom_logo() ) :
-                    the_custom_logo();
-                else :
-                ?>
+                the_custom_logo();
+                if ( is_front_page() && is_home() ) :
+                    ?>
                     <h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
                     <?php
-                    $news_portal_description = get_bloginfo( 'description', 'display' );
-                    if ( $news_portal_description || is_customize_preview() ) :
-                        ?>
-                        <p class="site-description"><?php echo $news_portal_description; ?></p>
-                    <?php endif; ?>
+                else :
+                    ?>
+                    <p class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></p>
+                    <?php
+                endif;
+                $news_portal_description = get_bloginfo( 'description', 'display' );
+                if ( $news_portal_description || is_customize_preview() ) :
+                    ?>
+                    <p class="site-description"><?php echo $news_portal_description; // phpcs:ignore. ?></p>
                 <?php endif; ?>
             </div><!-- .site-branding -->
 
             <nav id="site-navigation" class="main-navigation">
                 <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
                     <span><?php esc_html_e( 'Menu', 'news-portal' ); ?></span>
-                    <span class="menu-icon"></span>
+                    <div class="hamburger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
                 </button>
                 <div class="menu-container">
                     <?php
@@ -56,21 +62,28 @@
                         array(
                             'theme_location' => 'menu-1',
                             'menu_id'        => 'primary-menu',
-                            'container'      => false,
-                            'fallback_cb'    => 'news_portal_default_menu'
                         )
                     );
                     ?>
+
+                    <div class="header-actions">
+                        <button class="search-toggle" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle search', 'news-portal'); ?>">
+                            <i class="fas fa-search"></i>
+                        </button>
+
+                        <div class="theme-switch-wrapper">
+                            <button id="theme-switch" class="theme-switch" aria-label="<?php esc_attr_e('Switch theme', 'news-portal'); ?>">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-search-form">
                     <?php get_search_form(); ?>
                 </div>
             </nav><!-- #site-navigation -->
-        </div><!-- .container -->
-        
-        <?php if (is_front_page() && get_theme_mod('homepage_featured_slider', true)) : ?>
-        <div class="featured-slider-container">
-            <?php news_portal_featured_slider(); ?>
         </div>
-        <?php endif; ?>
     </header><!-- #masthead -->
 
     <div id="content" class="site-content">

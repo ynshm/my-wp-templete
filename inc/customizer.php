@@ -81,24 +81,38 @@ function news_portal_customize_register($wp_customize) {
     
     // プライマリーカラー
     $wp_customize->add_setting('primary_color', array(
-        'default' => '#3b82f6',
+        'default' => '#4f46e5',
         'sanitize_callback' => 'sanitize_hex_color',
     ));
     
     $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'primary_color', array(
         'label' => __('Primary Color', 'news-portal'),
         'section' => 'news_portal_colors_section',
+        'description' => __('メインカラーとして使用されます。ボタン、リンク、ヘッダーなどの要素に適用されます。', 'news-portal'),
     )));
     
     // セカンダリーカラー
     $wp_customize->add_setting('secondary_color', array(
-        'default' => '#ec4899',
+        'default' => '#f43f5e',
         'sanitize_callback' => 'sanitize_hex_color',
     ));
     
     $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'secondary_color', array(
         'label' => __('Secondary Color', 'news-portal'),
         'section' => 'news_portal_colors_section',
+        'description' => __('アクセントとして使用されます。ホバー状態やハイライト要素に適用されます。', 'news-portal'),
+    )));
+    
+    // アクセントカラー
+    $wp_customize->add_setting('accent_color', array(
+        'default' => '#22d3ee',
+        'sanitize_callback' => 'sanitize_hex_color',
+    ));
+    
+    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'accent_color', array(
+        'label' => __('Accent Color', 'news-portal'),
+        'section' => 'news_portal_colors_section',
+        'description' => __('特定の要素を強調するために使用されます。', 'news-portal'),
     )));
     
     // トップページ設定セクション
