@@ -156,11 +156,21 @@ function news_portal_customize_register($wp_customize) {
         'sanitize_callback' => 'absint',
     ));
     
-    $wp_customize->add_control(new WP_Customize_Category_Control($wp_customize, 'homepage_featured_category', array(
+    // Get all categories for the dropdown
+    $categories = get_categories(array('hide_empty' => 0));
+    $cats = array();
+    $cats[''] = __('Select a category', 'news-portal');
+    foreach ($categories as $category) {
+        $cats[$category->term_id] = $category->name;
+    }
+    
+    $wp_customize->add_control('homepage_featured_category', array(
         'label' => __('Featured Slider Category', 'news-portal'),
         'section' => 'news_portal_homepage_section',
+        'type' => 'select',
+        'choices' => $cats,
         'description' => __('Select a category for featured slider. Leave empty to display latest posts.', 'news-portal'),
-    )));
+    ));
     
     // 無限スクロールの有効化
     $wp_customize->add_setting('enable_infinite_scroll', array(
