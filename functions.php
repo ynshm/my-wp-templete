@@ -563,6 +563,7 @@ require_once get_template_directory() . '/inc/security-functions.php';
 require_once get_template_directory() . '/inc/custom-post-types.php';
 require_once get_template_directory() . '/inc/api-functions.php';
 require_once get_template_directory() . '/inc/llm-functions.php';
+require_once get_template_directory() . '/inc/race-schedule-widget.php';
 
 // Sitemap modules
 require_once get_template_directory() . '/inc/sitemap-submission.php';
